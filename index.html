@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI Concepts — Tokens, Vectors, Transformers & Agents</title>
+  <style>
+    :root {
+      --bg: #0b1018;
+      --surface: #111a27;
+      --surface2: #1a2638;
+      --text: #e8eef7;
+      --muted: #9fb0c8;
+      --accent: #6eb5ff;
+      --accent2: #7ee787;
+      --warn: #ffc857;
+      --danger: #fca5a5;
+      --border: #2b3a55;
+      --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      --radius: 12px;
+      --shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; }
+    body {
+      min-height: 100vh;
+      font-family: var(--font);
+      background: radial-gradient(ellipse 120% 80% at 50% -20%, #15324f 0%, var(--bg) 55%);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .wrap { max-width: 1040px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+    header h1 {
+      font-size: clamp(1.45rem, 4vw, 2rem);
+      font-weight: 650;
+      letter-spacing: -0.02em;
+      margin: 0 0 0.4rem;
+    }
+    header p { margin: 0 0 1.25rem; color: var(--muted); max-width: 70ch; }
+
+    .tabs {
+      display: flex; flex-wrap: wrap; gap: 0.35rem;
+      margin-bottom: 1rem; padding: 0.4rem;
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      position: sticky; top: 0.5rem; z-index: 10;
+      backdrop-filter: blur(8px);
+    }
+    .tabs button {
+      appearance: none; border: 1px solid transparent;
+      background: transparent; color: var(--muted);
+      font: inherit; font-size: 0.85rem; font-weight: 550;
+      padding: 0.55rem 0.9rem; border-radius: 8px; cursor: pointer;
+      transition: color 0.15s, background 0.15s, border-color 0.15s;
+    }
+    .tabs button:hover { color: var(--text); background: var(--surface2); }
+    .tabs button[aria-selected="true"] {
+      color: var(--bg); background: var(--accent);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .panel {
+      display: none;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem 1.5rem 1.75rem;
+      box-shadow: var(--shadow);
+    }
+    .panel.active { display: block; animation: fadeIn 0.22s ease; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .panel h2 { font-size: 1.25rem; margin: 0 0 0.6rem; font-weight: 650; }
+    .panel h3 {
+      font-size: 1rem; margin: 1.5rem 0 0.5rem;
+      color: var(--accent); font-weight: 600;
+    }
+    .panel p { margin: 0 0 0.85rem; }
+    .panel .lead { color: var(--muted); margin: 0 0 1rem; max-width: 72ch; }
+    .panel ul { margin: 0 0 0.85rem 1.1rem; padding: 0; }
+    .panel li { margin-bottom: 0.35rem; }
+    .panel code { font-family: var(--mono); font-size: 0.88em; background: #0c1726; padding: 1px 5px; border-radius: 4px; color: #b6dcff; }
+    .panel strong { color: var(--accent2); font-weight: 600; }
+
+    .diagram-wrap {
+      background: var(--bg);
+      border-radius: 10px;
+      padding: 1rem;
+      border: 1px solid var(--border);
+      margin: 0.5rem 0 1.25rem;
+      overflow: auto;
+    }
+    .diagram { width: 100%; height: auto; display: block; }
+
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    @media (max-width: 720px) { .grid2 { grid-template-columns: 1fr; } }
+
+    .card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.9rem 1rem;
+    }
+    .card h4 { margin: 0 0 0.4rem; font-size: 0.95rem; color: var(--warn); font-weight: 600; }
+    .card p { margin: 0; color: var(--muted); font-size: 0.92rem; }
+
+    .controls {
+      display: flex; flex-wrap: wrap; gap: 0.75rem 1.25rem;
+      align-items: center; margin: 0.75rem 0 0.5rem;
+      font-size: 0.9rem;
+    }
+    .controls label { color: var(--muted); display: inline-flex; align-items: center; gap: 0.4rem; }
+    .controls input[type="range"] { width: 180px; accent-color: var(--accent); }
+    .controls input[type="text"] {
+      font: inherit; font-size: 0.9rem; padding: 0.35rem 0.55rem;
+      background: #0c1726; color: var(--text);
+      border: 1px solid var(--border); border-radius: 6px;
+      width: 220px;
+    }
+    .controls button {
+      font: inherit; font-size: 0.85rem; font-weight: 550;
+      padding: 0.45rem 0.85rem; border-radius: 6px;
+      background: var(--accent); color: var(--bg);
+      border: 1px solid rgba(255,255,255,0.1);
+      cursor: pointer;
+    }
+    .controls button.secondary { background: var(--surface2); color: var(--text); border-color: var(--border); }
+    .controls button:hover { filter: brightness(1.1); }
+
+    table.kv {
+      width: 100%; border-collapse: collapse;
+      font-size: 0.9rem; margin: 0.5rem 0 1rem;
+    }
+    table.kv th, table.kv td {
+      text-align: left; padding: 0.45rem 0.6rem;
+      border-bottom: 1px solid var(--border);
+    }
+    table.kv th { color: var(--muted); font-weight: 550; background: var(--surface2); }
+    table.kv td.mono { font-family: var(--mono); color: #b6dcff; font-size: 0.85rem; }
+
+    .badge {
+      display: inline-block; padding: 1px 7px; border-radius: 999px;
+      font-size: 0.72rem; font-weight: 600;
+      background: var(--surface2); color: var(--muted);
+      border: 1px solid var(--border); margin-left: 0.4rem;
+      vertical-align: middle;
+    }
+    .callout {
+      border-left: 3px solid var(--warn);
+      background: #1e1808;
+      padding: 0.7rem 0.9rem; border-radius: 6px;
+      margin: 0.75rem 0; font-size: 0.92rem;
+    }
+    .callout.green { border-color: var(--accent2); background: #0d1f15; }
+    .callout.blue { border-color: var(--accent); background: #0d1c2c; }
+
+    footer { margin-top: 2rem; font-size: 0.8rem; color: var(--muted); text-align: center; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .panel.active { animation: none; }
+      .anim, .anim * { animation: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>AI building blocks <span class="badge">interactive</span></h1>
+      <p>
+        Visual, animated, and hands-on explanations of tokens, vectors, transformers,
+        generation, agents, and token budgets. Open in any browser; works offline.
+      </p>
+    </header>
+
+    <div class="tabs" role="tablist" aria-label="Topics">
+      <button role="tab" id="tab-overview" aria-selected="true" aria-controls="panel-overview" tabindex="0">Overview</button>
+      <button role="tab" id="tab-tokens" aria-selected="false" aria-controls="panel-tokens" tabindex="-1">Tokens</button>
+      <button role="tab" id="tab-vectors" aria-selected="false" aria-controls="panel-vectors" tabindex="-1">Vectors</button>
+      <button role="tab" id="tab-training" aria-selected="false" aria-controls="panel-training" tabindex="-1">How vectors are learned</button>
+      <button role="tab" id="tab-transformer" aria-selected="false" aria-controls="panel-transformer" tabindex="-1">Transformer</button>
+      <button role="tab" id="tab-generation" aria-selected="false" aria-controls="panel-generation" tabindex="-1">Generation</button>
+      <button role="tab" id="tab-agents" aria-selected="false" aria-controls="panel-agents" tabindex="-1">Agents</button>
+      <button role="tab" id="tab-optimize" aria-selected="false" aria-controls="panel-optimize" tabindex="-1">Token efficiency</button>
+    </div>
+
+    <!-- ============================== OVERVIEW ============================== -->
+    <section class="panel active" role="tabpanel" id="panel-overview" aria-labelledby="tab-overview">
+      <h2>End-to-end picture</h2>
+      <p class="lead">
+        Your text becomes <strong>tokens</strong>; tokens become <strong>vectors</strong>;
+        vectors flow through a <strong>transformer</strong>; the model outputs probabilities over
+        the next token. <em>Agents</em> wrap that loop with tools and feed results back as more tokens.
+      </p>
+      <div class="diagram-wrap">
+        <svg class="diagram anim" viewBox="0 0 900 280" xmlns="http://www.w3.org/2000/svg" aria-label="Overview pipeline">
+          <defs>
+            <marker id="arrowOv" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+              <path d="M0,0 L9,4.5 L0,9 Z" fill="#6eb5ff" />
+            </marker>
+            <linearGradient id="gOv" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#1a2638" />
+              <stop offset="100%" stop-color="#111a27" />
+            </linearGradient>
+          </defs>
+          <rect width="900" height="280" fill="#0b1018" rx="8" />
+
+          <g>
+            <rect x="22" y="100" width="115" height="56" rx="8" fill="url(#gOv)" stroke="#6eb5ff" />
+            <text x="80" y="125" text-anchor="middle" fill="#e8eef7" font-size="13" font-weight="600">Your prompt</text>
+            <text x="80" y="142" text-anchor="middle" fill="#9fb0c8" font-size="11">raw text / UI</text>
+          </g>
+          <g>
+            <rect x="160" y="100" width="125" height="56" rx="8" fill="url(#gOv)" stroke="#7ee787" />
+            <text x="222" y="125" text-anchor="middle" fill="#e8eef7" font-size="13" font-weight="600">Tokenizer</text>
+            <text x="222" y="142" text-anchor="middle" fill="#9fb0c8" font-size="11">text → token IDs</text>
+          </g>
+          <g>
+            <rect x="310" y="78" width="160" height="100" rx="8" fill="url(#gOv)" stroke="#6eb5ff" />
+            <text x="390" y="108" text-anchor="middle" fill="#e8eef7" font-size="13" font-weight="600">Transformer</text>
+            <text x="390" y="128" text-anchor="middle" fill="#9fb0c8" font-size="11">embedding lookup</text>
+            <text x="390" y="146" text-anchor="middle" fill="#9fb0c8" font-size="11">+ N attention layers</text>
+            <text x="390" y="164" text-anchor="middle" fill="#9fb0c8" font-size="11">(weights are frozen)</text>
+          </g>
+          <g>
+            <rect x="495" y="100" width="125" height="56" rx="8" fill="url(#gOv)" stroke="#ffc857" />
+            <text x="557" y="125" text-anchor="middle" fill="#e8eef7" font-size="13" font-weight="600">Next-token</text>
+            <text x="557" y="142" text-anchor="middle" fill="#9fb0c8" font-size="11">probabilities</text>
+          </g>
+          <g>
+            <rect x="645" y="100" width="155" height="56" rx="8" fill="url(#gOv)" stroke="#7ee787" />
+            <text x="722" y="125" text-anchor="middle" fill="#e8eef7" font-size="13" font-weight="600">Sample / decode</text>
+            <text x="722" y="142" text-anchor="middle" fill="#9fb0c8" font-size="11">reply tokens</text>
+          </g>
+
+          <line x1="138" y1="128" x2="158" y2="128" stroke="#6eb5ff" stroke-width="2" marker-end="url(#arrowOv)" />
+          <line x1="285" y1="128" x2="308" y2="128" stroke="#6eb5ff" stroke-width="2" marker-end="url(#arrowOv)" />
+          <line x1="470" y1="128" x2="493" y2="128" stroke="#6eb5ff" stroke-width="2" marker-end="url(#arrowOv)" />
+          <line x1="620" y1="128" x2="643" y2="128" stroke="#6eb5ff" stroke-width="2" marker-end="url(#arrowOv)" />
+
+          <!-- moving packet -->
+          <circle r="5" fill="#7ee787">
+            <animateMotion dur="5s" repeatCount="indefinite"
+              path="M 22 128 L 800 128" />
+          </circle>
+
+          <!-- Agent loop -->
+          <path d="M390 178 L390 220 L120 220 L120 178" fill="none" stroke="#ffc857" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#arrowOv)" />
+          <rect x="48" y="225" width="160" height="42" rx="8" fill="#1a2638" stroke="#ffc857" />
+          <text x="128" y="246" text-anchor="middle" fill="#e8eef7" font-size="12" font-weight="600">Agent loop</text>
+          <text x="128" y="260" text-anchor="middle" fill="#9fb0c8" font-size="10">tools → results → more tokens</text>
+          <text x="430" y="212" fill="#ffc857" font-size="11">optional: inject tool output back into context</text>
+        </svg>
+      </div>
+      <div class="grid2">
+        <div class="card"><h4>Why it matters for design</h4><p>Latency and cost both scale with tokens-in plus tokens-out. Anything you append (system prompt, RAG chunks, tool JSON) is more input cost.</p></div>
+        <div class="card"><h4>Why it matters for behavior</h4><p>Agents amplify both successes and failures: a bad tool result pollutes the context for every following turn.</p></div>
+      </div>
+    </section>
+
+    <!-- ============================== TOKENS ============================== -->
+    <section class="panel" role="tabpanel" id="panel-tokens" aria-labelledby="tab-tokens" hidden>
+      <h2>Tokens — the unit the model actually sees</h2>
+      <p class="lead">
+        Models do not consume words or characters. They consume <strong>tokens</strong>:
+        integer IDs from a fixed vocabulary built by a <em>tokenizer</em>.
+        A token can be a word, a syllable, a few characters, punctuation, or a byte sequence.
+      </p>
+
+      <h3>1. From string to IDs</h3>
+      <div class="diagram-wrap">
+        <svg class="diagram anim" viewBox="0 0 900 220" xmlns="http://www.w3.org/2000/svg" aria-label="Tokenization">
+          <rect width="900" height="220" fill="#0b1018" rx="8" />
+          <text x="450" y="32" text-anchor="middle" fill="#e8eef7" font-size="14" font-weight="600">String → tokenizer → token IDs → embedding rows</text>
+
+          <rect x="40" y="60" width="320" height="46" rx="6" fill="#1a2638" stroke="#6eb5ff" />
+          <text x="200" y="88" text-anchor="middle" fill="#e8eef7" font-size="13" font-family="ui-monospace, monospace">"unbelievable AI agents!"</text>
+
+          <text x="380" y="88" text-anchor="middle" fill="#7ee787" font-size="22">→</text>
+
+          <rect x="410" y="50" width="450" height="66" rx="6" fill="#1a2638" stroke="#7ee787" />
+          <text x="635" y="74" text-anchor="middle" fill="#9fb0c8" font-size="11">subword pieces (illustrative — exact split depends on tokenizer)</text>
+          <text x="635" y="98" text-anchor="middle" fill="#e8eef7" font-size="13" font-family="ui-monospace, monospace">[ "un", "believ", "able", " AI", " agents", "!" ]</text>
+
+          <g font-family="ui-monospace, monospace" font-size="11">
+            <rect x="80" y="135" width="110" height="34" rx="6" fill="#0d1c2c" stroke="#6eb5ff" />
+            <text x="135" y="156" text-anchor="middle" fill="#b6dcff">id 581</text>
+            <rect x="200" y="135" width="120" height="34" rx="6" fill="#0d1c2c" stroke="#6eb5ff" />
+            <text x="260" y="156" text-anchor="middle" fill="#b6dcff">id 24109</text>
+            <rect x="330" y="135" width="110" height="34" rx="6" fill="#0d1c2c" stroke="#6eb5ff" />
+            <text x="385" y="156" text-anchor="middle" fill="#b6dcff">id 712</text>
+            <rect x="450" y="135" width="100" height="34" rx="6" fill="#0d1c2c" stroke="#6eb5ff" />
+            <text x="500" y="156" text-anchor="middle" fill="#b6dcff">id 9013</text>
+            <rect x="560" y="135" width="120" height="34" rx="6" fill="#0d1c2c" stroke="#6eb5ff" />
+            <text x="620" y="156" text-anchor="middle" fill="#b6dcff">id 30221</text>
+            <rect x="690" y="135" width="80" height="34" rx="6" fill="#0d1c2c" stroke="#6eb5ff" />
+            <text x="730" y="156" text-anchor="middle" fill="#b6dcff">id 0</text>
+          </g>
+          <text x="450" y="200" text-anchor="middle" fill="#9fb0c8" font-size="11">Each ID is then looked up in a giant matrix → that row is the token's vector.</text>
+
+          <!-- Animated highlight sweeping across IDs -->
+          <rect x="80" y="135" width="110" height="34" rx="6" fill="#7ee787" opacity="0">
+            <animate attributeName="opacity" values="0.0;0.35;0.0" keyTimes="0;0.15;0.3" dur="6s" repeatCount="indefinite" />
+          </rect>
+          <rect x="200" y="135" width="120" height="34" rx="6" fill="#7ee787" opacity="0">
+            <animate attributeName="opacity" values="0;0;0.35;0" keyTimes="0;0.15;0.3;0.45" dur="6s" repeatCount="indefinite" />
+          </rect>
+          <rect x="330" y="135" width="110" height="34" rx="6" fill="#7ee787" opacity="0">
+            <animate attributeName="opacity" values="0;0;0;0.35;0" keyTimes="0;0.3;0.45;0.6;0.75" dur="6s" repeatCount="indefinite" />
+          </rect>
+        </svg>
+      </div>
+
+      <h3>2. Why subwords (instead of words or letters)?</h3>
+      <ul>
+        <li><strong>Word-level</strong> vocabularies explode in size and can't represent typos, names, or new words.</li>
+        <li><strong>Character-level</strong> sequences become too long; the model wastes capacity learning English spelling.</li>
+        <li><strong>Subword</strong> (BPE / WordPiece / SentencePiece) keeps common words as one token and splits rare ones — the sweet spot.</li>
+      </ul>
+
+      <h3>3. Try it: rough English heuristic</h3>
+      <div class="callout blue">
+        For everyday English prose: <strong>~4 chars/token</strong> or <strong>~¾ word/token</strong>.
+        Code, JSON, URLs, and non-Latin scripts can be 2× or 3× more expensive.
+      </div>
+      <div class="controls">
+        <label>Type any English text:
+          <input id="tokInput" type="text" value="Tokens are how models bill and remember." />
+        </label>
+      </div>
+      <table class="kv">
+        <tr><th>Characters</th><td class="mono" id="tokChars">—</td></tr>
+        <tr><th>Words</th><td class="mono" id="tokWords">—</td></tr>
+        <tr><th>Estimated tokens (chars/4)</th><td class="mono" id="tokFromChars">—</td></tr>
+        <tr><th>Estimated tokens (words×0.75)</th><td class="mono" id="tokFromWords">—</td></tr>
+      </table>
+      <p class="lead" style="font-size:0.88rem;">
+        These are <em>rough</em> estimates. For accurate counts use the provider's tokenizer
+        (e.g. <code>tiktoken</code> for OpenAI, the model's <code>tokenizer.json</code> for HF / local SLMs).
+      </p>
+
+      <h3>4. Where token cost actually lives</h3>
+      <ul>
+        <li><strong>System prompt + tools schema:</strong> sent on every turn unless prompt caching applies.</li>
+        <li><strong>Conversation history:</strong> grows linearly; older turns rarely earn their keep.</li>
+        <li><strong>Tool outputs:</strong> raw API responses are usually the worst offender. Truncate or summarize.</li>
+        <li><strong>Generated tokens:</strong> billed separately (often more expensive than input).</li>
+      </ul>
+    </section>
+
+    <!-- ============================== VECTORS ============================== -->
+    <section class="panel" role="tabpanel" id="panel-vectors" aria-labelledby="tab-vectors" hidden>
+      <h2>Vectors — coordinates of meaning</h2>
+      <p class="lead">
+        A <strong>vector</strong> (a.k.a. <em>embedding</em>) is just a list of numbers that acts as a
+        digital fingerprint for a token's meaning. Lat/long is a 2-D vector that locates a place;
+        a 384-D embedding locates a <em>meaning</em> in a 384-dimensional space.
+      </p>
+
+      <h3>1. The mental model: 3 dimensions you can picture</h3>
+      <p>Imagine 3 axes — "Animal-like", "Fluffy", "Electronic":</p>
+      <table class="kv">
+        <tr><th>Word</th><th>Vector [animal, fluffy, electronic]</th><th>Reading</th></tr>
+        <tr><td>Dog</td><td class="mono">[0.9, 0.8, 0.1]</td><td>high animal, high fluff, low electronic</td></tr>
+        <tr><td>Cat</td><td class="mono">[0.9, 0.9, 0.1]</td><td>nearly identical to Dog → nearby in space</td></tr>
+        <tr><td>Laptop</td><td class="mono">[0.1, 0.1, 0.9]</td><td>opposite corner</td></tr>
+      </table>
+      <p class="lead">"Dog" and "Cat" share neighbors in real text, so the math <em>forces</em> their vectors to look alike. The model never reads the word "animal" — it just notices similar numbers.</p>
+
+      <h3>2. Why 384 (or 768, or 4096) dimensions?</h3>
+      <p>
+        More dimensions = more room for nuance: noun vs verb, formal vs slang, finance vs medical, sentiment, tense, register. Each dimension is an <em>abstract</em> trait the model
+        invented during training; humans rarely have words for them.
+      </p>
+      <div class="grid2">
+        <div class="card"><h4>Narrower (e.g. 128)</h4><p>Cheap, fast, "dumber" — collapses subtle meaning differences.</p></div>
+        <div class="card"><h4>Wider (e.g. 4096)</h4><p>Expensive, more nuance — what frontier LLMs use as their internal "workspace width."</p></div>
+      </div>
+
+      <h3>3. A 10-D financial example</h3>
+      <p>For a "high-growth tech stock" the model might learn something like:</p>
+      <table class="kv">
+        <tr><th>#</th><th>Concept</th><th>Value</th><th>Why</th></tr>
+        <tr><td>1</td><td>Risk</td><td class="mono">0.9</td><td>volatile</td></tr>
+        <tr><td>2</td><td>Dividend yield</td><td class="mono">0.1</td><td>reinvests profits</td></tr>
+        <tr><td>3</td><td>Growth potential</td><td class="mono">0.8</td><td>expanding market</td></tr>
+        <tr><td>4</td><td>Liquidity</td><td class="mono">0.2</td><td>thinner book</td></tr>
+        <tr><td>5</td><td>Tech sector</td><td class="mono">0.9</td><td>by definition</td></tr>
+        <tr><td>6</td><td>Fixed income</td><td class="mono">0.0</td><td>not a bond</td></tr>
+        <tr><td>7</td><td>Institutional interest</td><td class="mono">0.4</td><td>moderate</td></tr>
+        <tr><td>8</td><td>R&amp;D spending</td><td class="mono">0.7</td><td>innovation-heavy</td></tr>
+        <tr><td>9</td><td>Tangible assets</td><td class="mono">0.1</td><td>IP, not factories</td></tr>
+        <tr><td>10</td><td>Market cap</td><td class="mono">0.6</td><td>mid-large</td></tr>
+      </table>
+      <p>"Nvidia" and "Bitcoin" land near each other in this space because they share high values along Risk, Tech, and Growth — the model treats them as <em>conversational neighbors</em> without any dictionary.</p>
+
+      <h3>4. Interactive: cosine similarity</h3>
+      <p class="lead">Drag the sliders. Watch the angle between two 2-D "meaning vectors" change. Cosine similarity is just the cosine of that angle.</p>
+      <div class="controls">
+        <label>Vector A angle: <input id="vAang" type="range" min="0" max="360" value="40" /></label>
+        <label>Vector B angle: <input id="vBang" type="range" min="0" max="360" value="55" /></label>
+      </div>
+      <div class="diagram-wrap">
+        <svg id="cosineSvg" class="diagram" viewBox="0 0 600 320" xmlns="http://www.w3.org/2000/svg" aria-label="Cosine similarity demo">
+          <rect width="600" height="320" fill="#0b1018" rx="8" />
+          <line x1="300" y1="20" x2="300" y2="300" stroke="#2b3a55" />
+          <line x1="40" y1="160" x2="560" y2="160" stroke="#2b3a55" />
+          <circle cx="300" cy="160" r="120" fill="none" stroke="#1e2a40" stroke-dasharray="3 4" />
+          <line id="vecA" x1="300" y1="160" x2="300" y2="160" stroke="#7ee787" stroke-width="2.5" />
+          <line id="vecB" x1="300" y1="160" x2="300" y2="160" stroke="#6eb5ff" stroke-width="2.5" />
+          <text id="vecAlabel" x="0" y="0" fill="#7ee787" font-size="12">A</text>
+          <text id="vecBlabel" x="0" y="0" fill="#6eb5ff" font-size="12">B</text>
+          <text id="cosLabel" x="20" y="30" fill="#e8eef7" font-size="14" font-weight="600">cos(θ) = —</text>
+          <text id="cosHint" x="20" y="50" fill="#9fb0c8" font-size="11">+1 → identical meaning · 0 → unrelated · −1 → opposite</text>
+        </svg>
+      </div>
+
+      <h3>5. Where this shows up in apps</h3>
+      <ul>
+        <li><strong>Semantic search / RAG</strong>: embed the query, find nearest chunks in a vector DB, stuff them into the prompt.</li>
+        <li><strong>Clustering</strong> support tickets, deduping content, recommendation.</li>
+        <li><strong>Classification</strong>: cheap classifier on top of frozen embeddings.</li>
+      </ul>
+      <div class="callout green">
+        <strong>Design takeaway:</strong> RAG quality depends more on chunking, metadata, and choice of embedding model than on prompt wording.
+      </div>
+    </section>
+
+    <!-- ============================== TRAINING ============================== -->
+    <section class="panel" role="tabpanel" id="panel-training" aria-labelledby="tab-training" hidden>
+      <h2>How vectors are <em>actually</em> learned <span class="badge">no human assigns them</span></h2>
+      <p class="lead">
+        Nobody decides the numbers. They start as random noise. Training nudges them
+        until words that <em>appear in similar contexts</em> end up with similar coordinates.
+      </p>
+
+      <h3>1. The learning loop</h3>
+      <div class="diagram-wrap">
+        <svg class="diagram anim" viewBox="0 0 900 260" xmlns="http://www.w3.org/2000/svg" aria-label="Training loop">
+          <defs>
+            <marker id="arrTr" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+              <path d="M0,0 L9,4.5 L0,9 Z" fill="#6eb5ff" />
+            </marker>
+          </defs>
+          <rect width="900" height="260" fill="#0b1018" rx="8" />
+
+          <rect x="30" y="60" width="160" height="60" rx="8" fill="#1a2638" stroke="#6eb5ff" />
+          <text x="110" y="84" text-anchor="middle" fill="#e8eef7" font-size="13" font-weight="600">1. Show a sentence</text>
+          <text x="110" y="102" text-anchor="middle" fill="#9fb0c8" font-size="11">"The boy took his dog for a __"</text>
+
+          <rect x="220" y="60" width="160" height="60" rx="8" fill="#1a2638" stroke="#7ee787" />
+          <text x="300" y="84" text-anchor="middle" fill="#e8eef7" font-size="13" font-weight="600">2. Predict next token</text>
+          <text x="300" y="102" text-anchor="middle" fill="#9fb0c8" font-size="11">model guesses "toaster"</text>
+
+          <rect x="410" y="60" width="160" height="60" rx="8" fill="#1a2638" stroke="#fca5a5" />
+          <text x="490" y="84" text-anchor="middle" fill="#e8eef7" font-size="13" font-weight="600">3. Compute loss</text>
+          <text x="490" y="102" text-anchor="middle" fill="#9fb0c8" font-size="11">truth was "walk" → big error</text>
+
+          <rect x="600" y="60" width="170" height="60" rx="8" fill="#1a2638" stroke="#ffc857" />
+          <text x="685" y="84" text-anchor="middle" fill="#e8eef7" font-size="13" font-weight="600">4. Backpropagate</text>
+          <text x="685" y="102" text-anchor="middle" fill="#9fb0c8" font-size="11">nudge every weight & vector</text>
+
+          <line x1="190" y1="90" x2="218" y2="90" stroke="#6eb5ff" stroke-width="2" marker-end="url(#arrTr)" />
+          <line x1="380" y1="90" x2="408" y2="90" stroke="#6eb5ff" stroke-width="2" marker-end="url(#arrTr)" />
+          <line x1="570" y1="90" x2="598" y2="90" stroke="#6eb5ff" stroke-width="2" marker-end="url(#arrTr)" />
+
+          <path d="M770 90 L820 90 L820 170 L60 170 L60 122" fill="none" stroke="#ffc857" stroke-dasharray="6 4" stroke-width="1.5" marker-end="url(#arrTr)" />
+          <text x="450" y="190" text-anchor="middle" fill="#ffc857" font-size="11">repeat for billions of sentences (epochs × dataset)</text>
+
+          <rect x="170" y="200" width="560" height="44" rx="8" fill="#0d1f15" stroke="#7ee787" />
+          <text x="450" y="222" text-anchor="middle" fill="#e8eef7" font-size="12" font-weight="600">Result: vectors of words sharing context drift toward each other.</text>
+          <text x="450" y="237" text-anchor="middle" fill="#9fb0c8" font-size="10">"dog" pulled toward "walk", "leash", "park"; pushed away from "toaster".</text>
+        </svg>
+      </div>
+
+      <h3>2. Watch it happen — animated training</h3>
+      <p class="lead">
+        Below, four words start as random dots. Hit <em>Train</em> and they self-organize into
+        <span style="color:var(--accent2)">animal-like</span> and <span style="color:var(--accent)">device-like</span> clusters,
+        as if the dataset said <code>dog ~ cat</code> and <code>laptop ~ phone</code> often appear in similar sentences.
+      </p>
+      <div class="controls">
+        <button id="trainBtn">▶ Train</button>
+        <button id="trainReset" class="secondary">Reset to random</button>
+        <span id="trainStep" style="color:var(--muted); font-size:0.88rem;">step 0</span>
+      </div>
+      <div class="diagram-wrap">
+        <svg id="trainSvg" class="diagram" viewBox="0 0 600 340" xmlns="http://www.w3.org/2000/svg" aria-label="Training animation">
+          <rect width="600" height="340" fill="#0b1018" rx="8" />
+          <line x1="300" y1="20" x2="300" y2="320" stroke="#1e2a40" />
+          <line x1="20" y1="170" x2="580" y2="170" stroke="#1e2a40" />
+          <text x="300" y="16" text-anchor="middle" fill="#9fb0c8" font-size="11">"animal-like" axis  →  "device-like" axis</text>
+
+          <!-- target zones -->
+          <circle cx="180" cy="170" r="60" fill="#0d1f15" stroke="#7ee787" stroke-dasharray="4 3" opacity="0.55" />
+          <text x="180" y="105" text-anchor="middle" fill="#7ee787" font-size="11">animals cluster (target)</text>
+          <circle cx="430" cy="170" r="60" fill="#0d1c2c" stroke="#6eb5ff" stroke-dasharray="4 3" opacity="0.55" />
+          <text x="430" y="105" text-anchor="middle" fill="#6eb5ff" font-size="11">devices cluster (target)</text>
+        </svg>
+      </div>
+
+      <h3>3. What the human actually decides</h3>
+      <ul>
+        <li><strong>Architecture:</strong> dimensions (e.g. 384), number of layers, attention heads.</li>
+        <li><strong>Diet:</strong> the dataset — TinyStories vs financial filings vs cooking recipes. Same word, different vector ends up.</li>
+        <li><strong>Patience:</strong> epochs, learning rate, batch size. More practice → finer distinctions, until overfitting kicks in.</li>
+      </ul>
+      <div class="callout">
+        Same word, different worlds: "Apple" trained on finance lands near "Microsoft, stock". Trained on recipes it lands near "cinnamon, pie".
+      </div>
+    </section>
+
+    <!-- ============================== TRANSFORMER ============================== -->
+    <section class="panel" role="tabpanel" id="panel-transformer" aria-labelledby="tab-transformer" hidden>
+      <h2>Transformer — what those vectors flow through</h2>
+      <p class="lead">
+        A transformer is a stack of identical "blocks". Each block lets every token's vector
+        <strong>look at every other token's vector</strong> (attention) and then refine itself locally
+        (feed-forward). After N blocks, each vector is a contextual summary of the whole sentence.
+      </p>
+
+      <h3>1. One block, in slow motion</h3>
+      <div class="diagram-wrap">
+        <svg class="diagram anim" viewBox="0 0 900 360" xmlns="http://www.w3.org/2000/svg" aria-label="Transformer block">
+          <defs>
+            <marker id="arrTf" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+              <path d="M0,0 L8,4 L0,8 Z" fill="#9fb0c8" />
+            </marker>
+          </defs>
+          <rect width="900" height="360" fill="#0b1018" rx="8" />
+
+          <text x="450" y="36" text-anchor="middle" fill="#e8eef7" font-size="14" font-weight="600">Input: one vector per token</text>
+          <g>
+            <rect x="160" y="55" width="90" height="36" rx="6" fill="#1a2638" stroke="#6eb5ff" />
+            <text x="205" y="78" text-anchor="middle" fill="#e8eef7" font-size="12">"The"</text>
+            <rect x="270" y="55" width="90" height="36" rx="6" fill="#1a2638" stroke="#6eb5ff" />
+            <text x="315" y="78" text-anchor="middle" fill="#e8eef7" font-size="12">"boy"</text>
+            <rect x="380" y="55" width="90" height="36" rx="6" fill="#1a2638" stroke="#6eb5ff" />
+            <text x="425" y="78" text-anchor="middle" fill="#e8eef7" font-size="12">"walked"</text>
+            <rect x="490" y="55" width="90" height="36" rx="6" fill="#1a2638" stroke="#6eb5ff" />
+            <text x="535" y="78" text-anchor="middle" fill="#e8eef7" font-size="12">"his"</text>
+            <rect x="600" y="55" width="90" height="36" rx="6" fill="#1a2638" stroke="#6eb5ff" />
+            <text x="645" y="78" text-anchor="middle" fill="#e8eef7" font-size="12">"dog"</text>
+          </g>
+
+          <!-- attention block -->
+          <rect x="100" y="110" width="700" height="92" rx="10" fill="#111a27" stroke="#7ee787" />
+          <text x="450" y="138" text-anchor="middle" fill="#7ee787" font-size="14" font-weight="600">Self-attention</text>
+          <text x="450" y="158" text-anchor="middle" fill="#9fb0c8" font-size="12">For each token: build Query, Key, Value → mix Values weighted by Q·K similarity</text>
+          <text x="450" y="178" text-anchor="middle" fill="#9fb0c8" font-size="11">In a decoder, each position can only attend to itself + earlier tokens (causal mask)</text>
+
+          <!-- animated attention links from "dog" back to earlier tokens -->
+          <g stroke="#6eb5ff" stroke-width="1.5" fill="none" opacity="0.85">
+            <path d="M645 91 Q570 70 535 91" stroke-dasharray="3 3">
+              <animate attributeName="stroke-dashoffset" from="0" to="20" dur="2s" repeatCount="indefinite" />
+            </path>
+            <path d="M645 91 Q500 60 425 91" stroke-dasharray="3 3">
+              <animate attributeName="stroke-dashoffset" from="0" to="20" dur="2.4s" repeatCount="indefinite" />
+            </path>
+            <path d="M645 91 Q420 45 315 91" stroke-dasharray="3 3">
+              <animate attributeName="stroke-dashoffset" from="0" to="20" dur="2.8s" repeatCount="indefinite" />
+            </path>
+            <path d="M645 91 Q380 40 205 91" stroke-dasharray="3 3">
+              <animate attributeName="stroke-dashoffset" from="0" to="20" dur="3.2s" repeatCount="indefinite" />
+            </path>
+          </g>
+          <text x="780" y="80" fill="#6eb5ff" font-size="11">"dog" attends to its context</text>
+
+          <!-- FFN -->
+          <rect x="100" y="220" width="700" height="70" rx="10" fill="#111a27" stroke="#ffc857" />
+          <text x="450" y="247" text-anchor="middle" fill="#ffc857" font-size="14" font-weight="600">Feed-forward (per token, independent)</text>
+          <text x="450" y="267" text-anchor="middle" fill="#9fb0c8" font-size="12">Two linear layers + nonlinearity refine each vector locally</text>
+
+          <!-- Residual + LayerNorm -->
+          <rect x="100" y="305" width="700" height="40" rx="10" fill="#111a27" stroke="#2b3a55" />
+          <text x="450" y="330" text-anchor="middle" fill="#9fb0c8" font-size="12">+ Residual connection + LayerNorm wrap each sublayer · stack N of these blocks</text>
+        </svg>
+      </div>
+
+      <h3>2. Why this design wins</h3>
+      <div class="grid2">
+        <div class="card"><h4>Parallelism</h4><p>Unlike RNNs, all positions are processed simultaneously — fits GPUs perfectly.</p></div>
+        <div class="card"><h4>Long-range dependencies</h4><p>Attention is direct: "dog" can look at "the boy" 50 tokens earlier in one hop.</p></div>
+        <div class="card"><h4>Composable</h4><p>Same block for text, code, images (ViT), audio. The architecture is modality-agnostic.</p></div>
+        <div class="card"><h4>The cost</h4><p>Naive attention is <strong>O(n²)</strong> in sequence length — that's why long-context models are expensive.</p></div>
+      </div>
+
+      <h3>3. Decoder vs encoder</h3>
+      <ul>
+        <li><strong>Decoder-only</strong> (GPT, Llama, Mistral, Claude): trained to predict the next token. Causal mask. Used for chat, code generation, agents.</li>
+        <li><strong>Encoder-only</strong> (BERT, embedding models): bidirectional context. Best for classification, embeddings, retrieval.</li>
+        <li><strong>Encoder–decoder</strong> (T5, original Transformer): translation, summarization where you read one thing and write another.</li>
+      </ul>
+    </section>
+
+    <!-- ============================== GENERATION ============================== -->
+    <section class="panel" role="tabpanel" id="panel-generation" aria-labelledby="tab-generation" hidden>
+      <h2>Generation — one token at a time</h2>
+      <p class="lead">
+        Decoder LLMs are <strong>autoregressive</strong>: at each step the model emits a probability
+        distribution over the entire vocabulary; you sample one token, append it to the context,
+        and run again until a stop condition.
+      </p>
+
+      <h3>1. The decode loop</h3>
+      <div class="diagram-wrap">
+        <svg class="diagram anim" viewBox="0 0 900 280" xmlns="http://www.w3.org/2000/svg" aria-label="Generation loop">
+          <rect width="900" height="280" fill="#0b1018" rx="8" />
+          <text x="450" y="34" text-anchor="middle" fill="#e8eef7" font-size="14" font-weight="600">Loop until EOS / max_tokens / stop sequence</text>
+
+          <rect x="40" y="70" width="160" height="56" rx="8" fill="#1a2638" stroke="#6eb5ff" />
+          <text x="120" y="94" text-anchor="middle" fill="#e8eef7" font-size="12" font-weight="600">Context tokens</text>
+          <text x="120" y="112" text-anchor="middle" fill="#9fb0c8" font-size="10">prompt + so-far output</text>
+
+          <rect x="240" y="60" width="180" height="76" rx="8" fill="#1a2638" stroke="#7ee787" />
+          <text x="330" y="86" text-anchor="middle" fill="#e8eef7" font-size="12" font-weight="600">Transformer forward</text>
+          <text x="330" y="104" text-anchor="middle" fill="#9fb0c8" font-size="11">re-uses KV cache</text>
+          <text x="330" y="122" text-anchor="middle" fill="#9fb0c8" font-size="11">(speeds up repeats)</text>
+
+          <rect x="460" y="70" width="160" height="56" rx="8" fill="#1a2638" stroke="#ffc857" />
+          <text x="540" y="94" text-anchor="middle" fill="#e8eef7" font-size="12" font-weight="600">Logits → softmax</text>
+          <text x="540" y="112" text-anchor="middle" fill="#9fb0c8" font-size="10">probability per vocab id</text>
+
+          <rect x="660" y="70" width="200" height="56" rx="8" fill="#1a2638" stroke="#6eb5ff" />
+          <text x="760" y="94" text-anchor="middle" fill="#e8eef7" font-size="12" font-weight="600">Sample (temp / top-p)</text>
+          <text x="760" y="112" text-anchor="middle" fill="#9fb0c8" font-size="10">pick exactly one token</text>
+
+          <line x1="200" y1="98" x2="238" y2="98" stroke="#6eb5ff" stroke-width="2" />
+          <line x1="420" y1="98" x2="458" y2="98" stroke="#6eb5ff" stroke-width="2" />
+          <line x1="620" y1="98" x2="658" y2="98" stroke="#6eb5ff" stroke-width="2" />
+
+          <path d="M760 126 L760 175 L120 175 L120 128" fill="none" stroke="#6eb5ff" stroke-width="2" stroke-dasharray="6 4" />
+          <polygon points="120,128 115,138 125,138" fill="#6eb5ff" />
+          <text x="450" y="170" text-anchor="middle" fill="#6eb5ff" font-size="11">append the chosen token, repeat</text>
+
+          <!-- moving dot showing token cycling -->
+          <circle r="6" fill="#7ee787">
+            <animateMotion dur="4s" repeatCount="indefinite"
+              path="M 200 98 L 238 98 L 420 98 L 458 98 L 620 98 L 658 98 L 860 98 L 860 175 L 120 175 L 120 98 L 200 98" />
+          </circle>
+
+          <text x="450" y="225" text-anchor="middle" fill="#9fb0c8" font-size="11">Streaming sends each chosen token to the UI immediately — same total work, much better UX.</text>
+        </svg>
+      </div>
+
+      <h3>2. Try it: temperature & top-p</h3>
+      <p class="lead">
+        Below is a synthetic next-token distribution. Move <strong>temperature</strong> and watch
+        how the probabilities flatten or sharpen. Lower = more deterministic, higher = more creative.
+      </p>
+      <div class="controls">
+        <label>Temperature: <input id="tempSlider" type="range" min="0.1" max="2.0" step="0.05" value="1.0" /> <span id="tempVal" class="mono">1.00</span></label>
+        <label>Top-p: <input id="toppSlider" type="range" min="0.1" max="1.0" step="0.05" value="1.0" /> <span id="toppVal" class="mono">1.00</span></label>
+      </div>
+      <div class="diagram-wrap">
+        <svg id="distSvg" class="diagram" viewBox="0 0 700 260" xmlns="http://www.w3.org/2000/svg" aria-label="Sampling distribution"></svg>
+      </div>
+
+      <h3>3. Stopping & cost</h3>
+      <ul>
+        <li><strong>EOS token</strong> — the model's natural "done" marker.</li>
+        <li><strong>max_tokens</strong> — your safety belt; always set it.</li>
+        <li><strong>Stop sequences</strong> — e.g. <code>"\nUser:"</code> in custom chat formats.</li>
+      </ul>
+      <div class="callout blue">
+        Inference cost ≈ (input tokens) + (output tokens). Output tokens are usually <em>more expensive</em> per token than input — so trim outputs aggressively.
+      </div>
+    </section>
+
+    <!-- ============================== AGENTS ============================== -->
+    <section class="panel" role="tabpanel" id="panel-agents" aria-labelledby="tab-agents" hidden>
+      <h2>Agents — LLM + tools + control loop</h2>
+      <p class="lead">
+        An agent is your application code repeatedly calling an LLM. The model can ask to run
+        <strong>tools</strong> (function calls, HTTP, DB queries, code). Your orchestrator runs them and
+        feeds the results back into the next call as more tokens.
+      </p>
+
+      <h3>1. The control flow</h3>
+      <div class="diagram-wrap">
+        <svg class="diagram anim" viewBox="0 0 900 380" xmlns="http://www.w3.org/2000/svg" aria-label="Agent loop">
+          <rect width="900" height="380" fill="#0b1018" rx="8" />
+          <text x="450" y="32" text-anchor="middle" fill="#e8eef7" font-size="14" font-weight="600">Reason → Act → Observe → Repeat</text>
+
+          <rect x="370" y="55" width="160" height="56" rx="10" fill="#0d1c2c" stroke="#6eb5ff" stroke-width="2" />
+          <text x="450" y="78" text-anchor="middle" fill="#e8eef7" font-size="13" font-weight="600">Orchestrator</text>
+          <text x="450" y="96" text-anchor="middle" fill="#9fb0c8" font-size="10">your code / framework</text>
+
+          <line x1="450" y1="111" x2="450" y2="135" stroke="#2b3a55" />
+
+          <rect x="370" y="138" width="160" height="56" rx="10" fill="#1a2638" stroke="#7ee787" />
+          <text x="450" y="161" text-anchor="middle" fill="#e8eef7" font-size="13" font-weight="600">LLM call</text>
+          <text x="450" y="179" text-anchor="middle" fill="#9fb0c8" font-size="10">messages + tool schemas</text>
+
+          <line x1="450" y1="194" x2="450" y2="212" stroke="#2b3a55" />
+
+          <polygon points="450,212 405,236 495,236" fill="#1a2638" stroke="#ffc857" />
+          <text x="450" y="228" text-anchor="middle" fill="#ffc857" font-size="11" font-weight="600">decide</text>
+
+          <!-- to final reply -->
+          <line x1="405" y1="236" x2="160" y2="236" stroke="#7ee787" stroke-width="1.5" />
+          <line x1="160" y1="236" x2="160" y2="270" stroke="#7ee787" stroke-width="1.5" />
+          <rect x="80" y="272" width="160" height="50" rx="8" fill="#0d1f15" stroke="#7ee787" />
+          <text x="160" y="293" text-anchor="middle" fill="#e8eef7" font-size="12" font-weight="600">Final answer</text>
+          <text x="160" y="309" text-anchor="middle" fill="#9fb0c8" font-size="10">stream to user, end loop</text>
+
+          <!-- to tool -->
+          <line x1="495" y1="236" x2="740" y2="236" stroke="#ffc857" stroke-width="1.5" />
+          <line x1="740" y1="236" x2="740" y2="270" stroke="#ffc857" stroke-width="1.5" />
+          <rect x="660" y="272" width="160" height="50" rx="8" fill="#1e1808" stroke="#ffc857" />
+          <text x="740" y="293" text-anchor="middle" fill="#e8eef7" font-size="12" font-weight="600">Run tool(s)</text>
+          <text x="740" y="309" text-anchor="middle" fill="#9fb0c8" font-size="10">HTTP · DB · code · MCP</text>
+
+          <!-- back into context -->
+          <path d="M660 297 Q400 350 380 200" fill="none" stroke="#6eb5ff" stroke-width="1.5" stroke-dasharray="6 4">
+            <animate attributeName="stroke-dashoffset" from="0" to="40" dur="3s" repeatCount="indefinite" />
+          </path>
+          <text x="370" y="362" fill="#6eb5ff" font-size="10">truncate / summarize tool output → append as tool message</text>
+        </svg>
+      </div>
+
+      <h3>2. The hidden token cost of agents</h3>
+      <p>
+        Each turn re-sends the entire conversation, including <em>every prior tool output</em>.
+        Five tool calls of 2 KB each is ~10 KB extra context on the next call — and the next, and the next.
+      </p>
+      <div class="grid2">
+        <div class="card"><h4>Cap observation size</h4><p>Truncate tool responses to top-N rows, JSON pick fields, or run a "summarize" pass before re-injecting.</p></div>
+        <div class="card"><h4>Narrow tool schemas</h4><p>Smaller, well-typed schemas reduce hallucinated arguments and shrink the system prompt.</p></div>
+        <div class="card"><h4>Step budget</h4><p>Hard-cap iterations (e.g. <code>max_steps = 8</code>). Otherwise an agent in doubt will loop forever.</p></div>
+        <div class="card"><h4>Validate server-side</h4><p>The model can request anything — your code is the actual security boundary.</p></div>
+      </div>
+
+      <h3>3. Common patterns</h3>
+      <ul>
+        <li><strong>ReAct</strong>: think → call tool → observe → repeat. Most common.</li>
+        <li><strong>Plan-then-execute</strong>: make a plan once, then execute steps with smaller calls.</li>
+        <li><strong>Multi-agent</strong>: orchestrator + specialists. Powerful but token-heavy; worth it only when one model truly can't handle the task.</li>
+      </ul>
+    </section>
+
+    <!-- ============================== OPTIMIZATION ============================== -->
+    <section class="panel" role="tabpanel" id="panel-optimize" aria-labelledby="tab-optimize" hidden>
+      <h2>Token efficiency — practical levers</h2>
+      <p class="lead">
+        Same behavior, fewer tokens, fewer round-trips. Most wins come from <em>what you put in</em>, not clever prompting tricks.
+      </p>
+
+      <h3>Before vs after</h3>
+      <div class="diagram-wrap">
+        <svg class="diagram" viewBox="0 0 900 280" xmlns="http://www.w3.org/2000/svg" aria-label="Optimization comparison">
+          <rect width="900" height="280" fill="#0b1018" rx="8" />
+          <text x="450" y="34" text-anchor="middle" fill="#e8eef7" font-size="14" font-weight="600">Shrink what enters the model</text>
+
+          <rect x="50" y="60" width="350" height="190" rx="10" fill="#2a1520" stroke="#fca5a5" />
+          <text x="225" y="86" text-anchor="middle" fill="#fca5a5" font-size="13" font-weight="600">Token-heavy</text>
+          <text x="70" y="115" fill="#e8eef7" font-size="12">• Verbose system prompt resent every turn</text>
+          <text x="70" y="138" fill="#e8eef7" font-size="12">• Full JSON / logs pasted as observations</text>
+          <text x="70" y="161" fill="#e8eef7" font-size="12">• 5+ few-shot examples</text>
+          <text x="70" y="184" fill="#e8eef7" font-size="12">• Entire conversation history forever</text>
+          <text x="70" y="207" fill="#e8eef7" font-size="12">• Unbounded tool output</text>
+          <text x="70" y="230" fill="#e8eef7" font-size="12">• No summarization between turns</text>
+
+          <text x="430" y="160" fill="#7ee787" font-size="32">→</text>
+
+          <rect x="500" y="60" width="350" height="190" rx="10" fill="#0d1f15" stroke="#7ee787" />
+          <text x="675" y="86" text-anchor="middle" fill="#7ee787" font-size="13" font-weight="600">Token-lean</text>
+          <text x="520" y="115" fill="#e8eef7" font-size="12">• Stable system prompt → prompt caching</text>
+          <text x="520" y="138" fill="#e8eef7" font-size="12">• Pick fields, drop nulls, gzip-of-meaning</text>
+          <text x="520" y="161" fill="#e8eef7" font-size="12">• 1–2 sharp examples or none</text>
+          <text x="520" y="184" fill="#e8eef7" font-size="12">• Rolling summary of older turns</text>
+          <text x="520" y="207" fill="#e8eef7" font-size="12">• Hard caps + truncation + summary tools</text>
+          <text x="520" y="230" fill="#e8eef7" font-size="12">• RAG: top-k chunks only</text>
+        </svg>
+      </div>
+
+      <h3>The big levers, in order</h3>
+      <ol style="margin-left:1.1rem;">
+        <li><strong>Prompt caching</strong> (where supported): keep the system prompt + tool schemas <em>byte-stable</em> at the start of every request.</li>
+        <li><strong>Bound observations</strong>: never paste raw tool output beyond, say, 1–2 KB without summarization.</li>
+        <li><strong>Summarize history</strong>: replace turns older than N with a 1-paragraph rolling summary.</li>
+        <li><strong>Structured outputs</strong>: ask for JSON / enums; prevents the model from adding filler prose.</li>
+        <li><strong>Smaller model for sub-tasks</strong>: classification, routing, extraction can run on a cheap model and feed a bigger one.</li>
+        <li><strong>Stream + early-stop</strong>: stop sequences and <code>max_tokens</code> protect against runaway output.</li>
+      </ol>
+
+      <h3>Anti-patterns</h3>
+      <ul>
+        <li>Embedding entire docs in the system prompt instead of using RAG.</li>
+        <li>Passing full HTTP responses as tool observations "just in case".</li>
+        <li>Unsummarized multi-day chat history.</li>
+        <li>Few-shot examples that duplicate what the schema already says.</li>
+        <li>Polite filler ("certainly!", "let me think..."). Cheap individually, expensive at scale.</li>
+      </ul>
+      <div class="callout green">
+        Measure before you optimize. Log <em>tokens-in / tokens-out per request</em> and per tool. The biggest cost is usually one tool you forgot you had.
+      </div>
+    </section>
+
+    <footer>Open locally: <code>public/ai-concepts-guide.html</code></footer>
+  </div>
+
+  <script>
+  (function () {
+    /* ---------- Tabs ---------- */
+    var tabs = [].slice.call(document.querySelectorAll('[role="tab"]'));
+    var panels = [].slice.call(document.querySelectorAll('[role="tabpanel"]'));
+    function activate(id) {
+      tabs.forEach(function (t) {
+        var sel = t.id === id;
+        t.setAttribute('aria-selected', sel);
+        t.tabIndex = sel ? 0 : -1;
+      });
+      panels.forEach(function (p) {
+        var on = p.getAttribute('aria-labelledby') === id;
+        p.classList.toggle('active', on);
+        p.hidden = !on;
+      });
+    }
+    tabs.forEach(function (t) {
+      t.addEventListener('click', function () { activate(t.id); });
+      t.addEventListener('keydown', function (e) {
+        var i = tabs.indexOf(t), n = null;
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') n = tabs[(i + 1) % tabs.length];
+        else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') n = tabs[(i - 1 + tabs.length) % tabs.length];
+        else if (e.key === 'Home') n = tabs[0];
+        else if (e.key === 'End') n = tabs[tabs.length - 1];
+        if (n) { e.preventDefault(); n.focus(); activate(n.id); }
+      });
+    });
+    activate('tab-overview');
+
+    /* ---------- Tokens estimator ---------- */
+    var tokInput = document.getElementById('tokInput');
+    function updateTokens() {
+      var s = tokInput.value || '';
+      var chars = s.length;
+      var words = s.trim() ? s.trim().split(/\s+/).length : 0;
+      document.getElementById('tokChars').textContent = chars;
+      document.getElementById('tokWords').textContent = words;
+      document.getElementById('tokFromChars').textContent = (chars / 4).toFixed(1);
+      document.getElementById('tokFromWords').textContent = (words * 0.75).toFixed(1);
+    }
+    if (tokInput) { tokInput.addEventListener('input', updateTokens); updateTokens(); }
+
+    /* ---------- Cosine similarity demo ---------- */
+    var vAang = document.getElementById('vAang');
+    var vBang = document.getElementById('vBang');
+    function deg2rad(d) { return d * Math.PI / 180; }
+    function updateCosine() {
+      if (!vAang || !vBang) return;
+      var a = parseFloat(vAang.value), b = parseFloat(vBang.value);
+      var cx = 300, cy = 160, r = 120;
+      var ax = cx + r * Math.cos(deg2rad(a)), ay = cy - r * Math.sin(deg2rad(a));
+      var bx = cx + r * Math.cos(deg2rad(b)), by = cy - r * Math.sin(deg2rad(b));
+      var vA = document.getElementById('vecA'), vB = document.getElementById('vecB');
+      vA.setAttribute('x2', ax); vA.setAttribute('y2', ay);
+      vB.setAttribute('x2', bx); vB.setAttribute('y2', by);
+      var la = document.getElementById('vecAlabel'), lb = document.getElementById('vecBlabel');
+      la.setAttribute('x', ax + 8); la.setAttribute('y', ay - 4);
+      lb.setAttribute('x', bx + 8); lb.setAttribute('y', by - 4);
+      var cos = Math.cos(deg2rad(a - b));
+      var label = document.getElementById('cosLabel');
+      label.textContent = 'cos(θ) = ' + cos.toFixed(3) + '   (θ = ' + Math.abs(((a - b) % 360 + 540) % 360 - 180).toFixed(0) + '°)';
+    }
+    if (vAang && vBang) {
+      vAang.addEventListener('input', updateCosine);
+      vBang.addEventListener('input', updateCosine);
+      updateCosine();
+    }
+
+    /* ---------- Training animation ---------- */
+    var trainSvg = document.getElementById('trainSvg');
+    var trainBtn = document.getElementById('trainBtn');
+    var trainReset = document.getElementById('trainReset');
+    var trainStep = document.getElementById('trainStep');
+    var SVG_NS = 'http://www.w3.org/2000/svg';
+    var words = [
+      { name: 'dog',    target: { x: 180, y: 170 }, color: '#7ee787' },
+      { name: 'cat',    target: { x: 180, y: 170 }, color: '#7ee787' },
+      { name: 'laptop', target: { x: 430, y: 170 }, color: '#6eb5ff' },
+      { name: 'phone',  target: { x: 430, y: 170 }, color: '#6eb5ff' }
+    ];
+    var dots = [], labels = [];
+    var step = 0, raf = null, running = false;
+
+    function rand(min, max) { return min + Math.random() * (max - min); }
+    function buildTrainScene() {
+      [].slice.call(trainSvg.querySelectorAll('.dotG')).forEach(function (n) { n.remove(); });
+      dots = []; labels = [];
+      words.forEach(function (w, i) {
+        var g = document.createElementNS(SVG_NS, 'g');
+        g.setAttribute('class', 'dotG');
+        var c = document.createElementNS(SVG_NS, 'circle');
+        var sx = rand(40, 560), sy = rand(220, 310);
+        c.setAttribute('cx', sx); c.setAttribute('cy', sy); c.setAttribute('r', 9);
+        c.setAttribute('fill', w.color); c.setAttribute('opacity', '0.9');
+        g.appendChild(c);
+        var t = document.createElementNS(SVG_NS, 'text');
+        t.setAttribute('x', sx + 12); t.setAttribute('y', sy + 4);
+        t.setAttribute('fill', '#e8eef7'); t.setAttribute('font-size', '12');
+        t.textContent = w.name;
+        g.appendChild(t);
+        trainSvg.appendChild(g);
+        dots.push({ el: c, x: sx, y: sy, target: w.target });
+        labels.push(t);
+      });
+      step = 0; trainStep.textContent = 'step 0';
+    }
+    function trainTick() {
+      var lr = 0.04;
+      var allClose = true;
+      dots.forEach(function (d, i) {
+        var jitterX = (Math.random() - 0.5) * 1.4;
+        var jitterY = (Math.random() - 0.5) * 1.4;
+        d.x += (d.target.x - d.x) * lr + jitterX;
+        d.y += (d.target.y - d.y) * lr + jitterY;
+        d.el.setAttribute('cx', d.x);
+        d.el.setAttribute('cy', d.y);
+        labels[i].setAttribute('x', d.x + 12);
+        labels[i].setAttribute('y', d.y + 4);
+        var dx = d.target.x - d.x, dy = d.target.y - d.y;
+        if (dx * dx + dy * dy > 25) allClose = false;
+      });
+      step++;
+      trainStep.textContent = 'step ' + step;
+      if (running && step < 400 && !allClose) {
+        raf = requestAnimationFrame(trainTick);
+      } else {
+        running = false;
+        trainBtn.textContent = '▶ Train';
+      }
+    }
+    if (trainSvg) {
+      buildTrainScene();
+      trainBtn.addEventListener('click', function () {
+        if (running) {
+          running = false; cancelAnimationFrame(raf);
+          trainBtn.textContent = '▶ Train';
+        } else {
+          running = true; trainBtn.textContent = '⏸ Pause';
+          raf = requestAnimationFrame(trainTick);
+        }
+      });
+      trainReset.addEventListener('click', function () {
+        running = false; cancelAnimationFrame(raf);
+        trainBtn.textContent = '▶ Train';
+        buildTrainScene();
+      });
+    }
+
+    /* ---------- Sampling distribution demo ---------- */
+    var distSvg = document.getElementById('distSvg');
+    var tempSlider = document.getElementById('tempSlider');
+    var toppSlider = document.getElementById('toppSlider');
+    var tempVal = document.getElementById('tempVal');
+    var toppVal = document.getElementById('toppVal');
+    // Synthetic logits for next-token candidates
+    var candidates = [
+      { tok: 'walk',  logit: 4.2 },
+      { tok: 'run',   logit: 3.6 },
+      { tok: 'ride',  logit: 2.9 },
+      { tok: 'sleep', logit: 2.1 },
+      { tok: 'eat',   logit: 1.8 },
+      { tok: 'fly',   logit: 0.9 },
+      { tok: 'sing',  logit: 0.3 },
+      { tok: 'cook',  logit: -0.2 }
+    ];
+    function softmax(arr) {
+      var m = Math.max.apply(null, arr);
+      var ex = arr.map(function (v) { return Math.exp(v - m); });
+      var s = ex.reduce(function (a, b) { return a + b; }, 0);
+      return ex.map(function (v) { return v / s; });
+    }
+    function renderDist() {
+      if (!distSvg) return;
+      var T = parseFloat(tempSlider.value);
+      var P = parseFloat(toppSlider.value);
+      tempVal.textContent = T.toFixed(2);
+      toppVal.textContent = P.toFixed(2);
+
+      var scaled = candidates.map(function (c) { return c.logit / T; });
+      var probs = softmax(scaled);
+
+      // top-p filter
+      var sorted = probs.map(function (p, i) { return { p: p, i: i }; })
+                       .sort(function (a, b) { return b.p - a.p; });
+      var cum = 0, kept = new Set();
+      for (var k = 0; k < sorted.length; k++) {
+        cum += sorted[k].p; kept.add(sorted[k].i);
+        if (cum >= P) break;
+      }
+      var displayed = probs.map(function (p, i) { return kept.has(i) ? p : 0; });
+      var total = displayed.reduce(function (a, b) { return a + b; }, 0) || 1;
+      displayed = displayed.map(function (p) { return p / total; });
+
+      // render bars
+      while (distSvg.firstChild) distSvg.removeChild(distSvg.firstChild);
+      var bg = document.createElementNS(SVG_NS, 'rect');
+      bg.setAttribute('width', 700); bg.setAttribute('height', 260);
+      bg.setAttribute('fill', '#0b1018'); bg.setAttribute('rx', 8);
+      distSvg.appendChild(bg);
+
+      var n = candidates.length;
+      var barW = 60, gap = 18, startX = 40, baseY = 220, maxH = 170;
+      candidates.forEach(function (c, i) {
+        var p = displayed[i];
+        var h = Math.max(2, p * maxH);
+        var x = startX + i * (barW + gap);
+        var y = baseY - h;
+        var bar = document.createElementNS(SVG_NS, 'rect');
+        bar.setAttribute('x', x); bar.setAttribute('y', y);
+        bar.setAttribute('width', barW); bar.setAttribute('height', h);
+        bar.setAttribute('rx', 4);
+        bar.setAttribute('fill', kept.has(i) ? '#6eb5ff' : '#3a4660');
+        distSvg.appendChild(bar);
+        var tk = document.createElementNS(SVG_NS, 'text');
+        tk.setAttribute('x', x + barW / 2); tk.setAttribute('y', baseY + 18);
+        tk.setAttribute('text-anchor', 'middle');
+        tk.setAttribute('fill', '#e8eef7'); tk.setAttribute('font-size', 11);
+        tk.textContent = c.tok;
+        distSvg.appendChild(tk);
+        var pv = document.createElementNS(SVG_NS, 'text');
+        pv.setAttribute('x', x + barW / 2); pv.setAttribute('y', y - 6);
+        pv.setAttribute('text-anchor', 'middle');
+        pv.setAttribute('fill', '#9fb0c8'); pv.setAttribute('font-size', 10);
+        pv.textContent = (p * 100).toFixed(1) + '%';
+        distSvg.appendChild(pv);
+      });
+      var caption = document.createElementNS(SVG_NS, 'text');
+      caption.setAttribute('x', 350); caption.setAttribute('y', 248);
+      caption.setAttribute('text-anchor', 'middle');
+      caption.setAttribute('fill', '#9fb0c8'); caption.setAttribute('font-size', 11);
+      caption.textContent = 'Lower temperature → spikier distribution; top-p drops the long tail.';
+      distSvg.appendChild(caption);
+    }
+    if (distSvg) {
+      tempSlider.addEventListener('input', renderDist);
+      toppSlider.addEventListener('input', renderDist);
+      renderDist();
+    }
+  })();
+  </script>
+</body>
+</html>
+
