@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Home Network Monitor</title>
+  <link rel="icon" href="data:," />
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <svg viewBox="0 0 24 24" class="logo" aria-hidden="true"><path d="M12 18.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm-4.24-3.26a6 6 0 0 1 8.48 0l-1.41 1.42a4 4 0 0 0-5.66 0l-1.41-1.42ZM4.93 12.4a10 10 0 0 1 14.14 0l-1.41 1.42a8 8 0 0 0-11.32 0L4.93 12.4Zm-2.83-2.83a14 14 0 0 1 19.8 0L20.49 11a12 12 0 0 0-16.98 0L2.1 9.57Z"/></svg>
+      <span>Home Network Monitor</span>
+    </div>
+    <nav class="tabs" id="tabs">
+      <button data-tab="overview" class="active">Overview</button>
+      <button data-tab="devices">Devices</button>
+      <button data-tab="domains">Domains</button>
+      <button data-tab="traffic">Traffic</button>
+      <button data-tab="alerts">Alerts <span class="badge" id="alert-badge" hidden></span></button>
+      <button data-tab="queries">Live DNS</button>
+      <button data-tab="data">Data &amp; status</button>
+    </nav>
+    <div class="day-picker">
+      <label for="day">Day</label>
+      <input type="date" id="day" />
+    </div>
+  </header>
+
+  <main>
+    <section id="tab-overview" class="tab active">
+      <div class="kpis" id="kpis"></div>
+      <div class="grid-2">
+        <div class="card span-2">
+          <div class="card-head"><h2>Traffic by hour</h2><span class="legend"><i class="sw down"></i>Download <i class="sw up"></i>Upload</span></div>
+          <div id="hourly-chart" class="chart"></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h2>Top devices</h2></div>
+          <div id="top-talkers"></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h2>Top domains</h2></div>
+          <div id="top-domains"></div>
+        </div>
+        <div class="card span-2">
+          <div class="card-head"><h2>Recent alerts</h2><button class="link" data-goto="alerts">View all</button></div>
+          <div id="recent-alerts"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-devices" class="tab">
+      <div class="toolbar">
+        <input type="search" id="device-filter" placeholder="Filter by name, vendor, IP, MAC, type…" />
+        <label class="check"><input type="checkbox" id="device-online-only" /> Online only</label>
+        <span class="muted" id="device-count"></span>
+      </div>
+      <div class="card"><div id="devices-table"></div></div>
+    </section>
+
+    <section id="tab-domains" class="tab">
+      <div class="toolbar">
+        <input type="search" id="domain-search" placeholder="Search domains…" />
+        <select id="domain-days">
+          <option value="1">Selected day</option>
+          <option value="7">Last 7 days</option>
+          <option value="30">Last 30 days</option>
+          <option value="90">Last 90 days</option>
+        </select>
+        <select id="domain-device"><option value="">All devices</option></select>
+        <label class="check"><input type="checkbox" id="domain-group" checked /> Group by site</label>
+      </div>
+      <div class="card"><div id="domains-table"></div></div>
+    </section>
+
+    <section id="tab-traffic" class="tab">
+      <div class="toolbar">
+        <select id="traffic-days">
+          <option value="14">Last 14 days</option>
+          <option value="30" selected>Last 30 days</option>
+          <option value="90">Last 90 days</option>
+          <option value="365">Last year</option>
+        </select>
+        <span class="muted" id="traffic-source"></span>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>Daily upload / download</h2><span class="legend"><i class="sw down"></i>Download <i class="sw up"></i>Upload</span></div>
+        <div id="daily-chart" class="chart tall"></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>Per-device totals for this period</h2></div>
+        <div id="traffic-devices"></div>
+      </div>
+    </section>
+
+    <section id="tab-alerts" class="tab">
+      <div class="toolbar">
+        <select id="alert-status">
+          <option value="open">Open</option>
+          <option value="all">All (incl. acknowledged)</option>
+        </select>
+        <button id="ack-all" class="btn">Acknowledge all</button>
+      </div>
+      <div class="card"><div id="alerts-list"></div></div>
+    </section>
+
+    <section id="tab-queries" class="tab">
+      <div class="toolbar">
+        <input type="search" id="query-search" placeholder="Filter domain…" />
+        <select id="query-device"><option value="">All devices</option></select>
+        <label class="check"><input type="checkbox" id="query-live" checked /> Auto-refresh</label>
+      </div>
+      <div class="card"><div id="queries-table"></div></div>
+    </section>
+
+    <section id="tab-data" class="tab">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-head"><h2>Export data (CSV)</h2></div>
+          <div class="export-form">
+            <label>From <input type="date" id="export-start" /></label>
+            <label>To <input type="date" id="export-end" /></label>
+          </div>
+          <ul class="export-links" id="export-links"></ul>
+          <p class="muted small">All data lives in a single SQLite file (<code>data/netmon.sqlite3</code>) that you can also open with any SQLite tool, pandas, or DB Browser for SQLite.</p>
+        </div>
+        <div class="card">
+          <div class="card-head"><h2>Collectors</h2></div>
+          <div id="collectors"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <aside class="drawer" id="drawer" hidden>
+    <div class="drawer-inner">
+      <button class="close" id="drawer-close" aria-label="Close">&times;</button>
+      <div id="drawer-body"></div>
+    </div>
+  </aside>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
