@@ -1,0 +1,94 @@
+# Home Network Monitor configuration.
+# Copy to config.yaml and adjust. Anything you leave out uses the defaults
+# in netmon/config.py. Secrets are NOT stored here - use environment
+# variables (see .env.example).
+
+data_dir: ./data            # SQLite database, threat feeds, OUI registry
+timezone: America/Chicago   # "day" boundaries for daily totals; omit for system time
+
+lan:
+  cidr: auto                # or explicit, e.g. 192.168.1.0/24 (the AT&T default)
+  gateway_ip: 192.168.1.254 # AT&T gateway address
+  interface: null           # e.g. eth0 / wlan0; null = auto
+
+web:
+  host: 0.0.0.0             # listen on the LAN; requires NETMON_DASHBOARD_PASSWORD
+  port: 8080
+  allow_unauthenticated: false
+
+collectors:
+  # Who is connected: ARP scan of the LAN every 2 minutes. Works anywhere on
+  # the network with zero router changes.
+  discovery:
+    enabled: true
+    interval_seconds: 120
+    use_arp_scan: true      # needs root; falls back to the kernel neighbour table
+    dhcp_leases_file: null  # e.g. /var/lib/misc/dnsmasq.leases if this box runs DHCP
+
+  # Scrapes the AT&T gateway's device list (names, Wi-Fi band, on/off) and WAN
+  # byte counters (whole-home upload/download per day). No login needed.
+  att_gateway:
+    enabled: true
+    base_url: http://192.168.1.254
+    interval_seconds: 300
+
+  # Built-in logging DNS server: every domain every device looks up.
+  # Devices must use this machine as their DNS server (see README, "Step 2").
+  dns_proxy:
+    enabled: true
+    listen_host: 0.0.0.0
+    listen_port: 53
+    # Quad9 blocks known-malicious domains; Cloudflare is the fallback.
+    # Use 192.168.1.254 to keep AT&T's resolver instead.
+    upstream: [9.9.9.9, 1.1.1.1]
+    # Answer NXDOMAIN for the opt-out canaries so Firefox DNS-over-HTTPS and
+    # iCloud Private Relay fall back to regular (monitored) DNS.
+    disable_doh_canaries: true
+
+  # Already running Pi-hole or AdGuard Home? Import their query logs instead
+  # of using dns_proxy (disable dns_proxy in that case - both want port 53).
+  pihole:
+    enabled: false
+    base_url: http://127.0.0.1:80     # NETMON_PIHOLE_PASSWORD = web password (v6) / API token (v5)
+  adguard:
+    enabled: false
+    base_url: http://127.0.0.1:3000   # NETMON_ADGUARD_USER / NETMON_ADGUARD_PASSWORD
+
+  # Passive capture. On a normal LAN port it only sees broadcasts (DHCP names,
+  # mDNS services). On a switch mirror port, or if this box is your router, it
+  # sees everything: per-device bandwidth, remote hosts, TLS server names.
+  sniffer:
+    enabled: false
+    interface: null
+    bpf_filter: ""
+
+  # NetFlow v5 from your own router (OpenWrt/pfSense/OPNsense + softflowd)
+  # sitting behind the AT&T gateway in IP-passthrough mode.
+  netflow:
+    enabled: false
+    listen_port: 2055
+
+anomaly:
+  learning_period_hours: 48         # new-device alerts are "info" while learning your network
+  traffic_spike_multiplier: 3.0     # alert when a device moves >3x its 7-day average...
+  traffic_spike_min_bytes: 524288000  # ...and at least 500 MB
+  nxdomain_per_hour_threshold: 60
+  unique_subdomains_per_hour_threshold: 150
+  allowlist_domains: []             # e.g. [ring.com, nflxvideo.net] to silence known-good noise
+  trusted_resolvers: []             # public DNS servers you expect devices to use directly
+  alert_cooldown_hours: 24
+
+feeds:
+  enabled: true
+  refresh_hours: 24
+  sources:
+    - {name: urlhaus, url: "https://urlhaus.abuse.ch/downloads/hostfile/", format: hosts}
+    - {name: feodo-ips, url: "https://feodotracker.abuse.ch/downloads/ipblocklist.txt", format: ips}
+  local_files: []                   # your own blocklists: one domain (or IP, if the filename contains "ip") per line
+
+retention:
+  raw_dns_days: 30          # individual lookups (the "Live DNS" log)
+  hourly_traffic_days: 90
+  wan_samples_days: 90
+  host_traffic_days: 180
+  # Daily per-device traffic and per-day domain summaries are kept forever.

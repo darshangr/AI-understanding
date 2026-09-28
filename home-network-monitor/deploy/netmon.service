@@ -1,0 +1,30 @@
+# systemd unit for running netmon directly on a Raspberry Pi / Linux box.
+# Install:  sudo cp deploy/netmon.service /etc/systemd/system/ && sudo systemctl enable --now netmon
+# Assumes the repo is at /opt/netmon with a virtualenv in /opt/netmon/.venv.
+[Unit]
+Description=Home Network Monitor
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/netmon
+EnvironmentFile=/opt/netmon/.env
+ExecStart=/opt/netmon/.venv/bin/python -m netmon run -c /opt/netmon/config.yaml
+Restart=on-failure
+RestartSec=5
+
+# Run unprivileged with only the network capabilities it needs.
+DynamicUser=yes
+StateDirectory=netmon
+Environment=NETMON_DATA_DIR=/var/lib/netmon
+AmbientCapabilities=CAP_NET_RAW CAP_NET_ADMIN CAP_NET_BIND_SERVICE
+CapabilityBoundingSet=CAP_NET_RAW CAP_NET_ADMIN CAP_NET_BIND_SERVICE
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ReadOnlyPaths=/opt/netmon
+
+[Install]
+WantedBy=multi-user.target

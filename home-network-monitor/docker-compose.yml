@@ -1,0 +1,14 @@
+services:
+  netmon:
+    build: .
+    container_name: netmon
+    restart: unless-stopped
+    # Host networking is required: ARP scans, DHCP/mDNS sniffing and serving
+    # DNS to the LAN don't work from Docker's bridge network.
+    network_mode: host
+    cap_drop: [ALL]
+    cap_add: [NET_RAW, NET_ADMIN, NET_BIND_SERVICE]
+    env_file: .env
+    volumes:
+      - ./config.yaml:/config/config.yaml:ro
+      - ./data:/data

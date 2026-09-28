@@ -1,5 +1,7 @@
 # AI understanding — interactive guide
 
+> Also in this repo: **[Home Network Monitor](home-network-monitor/)**, a self-hosted app that tracks connected devices, the domains they hit, daily upload/download, and suspicious activity on a home network (AT&T gateway friendly).
+
 Static, offline-friendly HTML explaining **tokens**, **vectors / embeddings**, **how embeddings are learned**, **transformers**, **autoregressive generation**, **agents**, and **token efficiency**. Includes SVG animations and small interactive demos (temperature / top-p, cosine similarity, toy “training” clustering).
 
 ## Read it on the web
