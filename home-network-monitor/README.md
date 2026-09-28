@@ -29,12 +29,21 @@ the gateway at `192.168.1.254`.
 
 ## Try it in 30 seconds (no network changes)
 
+Requires Python 3.9 or newer. On macOS the command is `python3` (there is no
+`python` until you activate the virtual environment). If `python3` isn't
+found, run `xcode-select --install` or `brew install python`.
+
 ```bash
-cd home-network-monitor
-python3 -m venv .venv && . .venv/bin/activate
+git clone https://github.com/darshangr/AI-understanding.git
+cd AI-understanding/home-network-monitor
+python3 -m venv .venv
+source .venv/bin/activate        # from here on, "python" works
 pip install -r requirements.txt
-python -m netmon demo            # open http://127.0.0.1:8080
+python -m netmon demo            # then open http://127.0.0.1:8080
 ```
+
+Press Ctrl+C to stop. Next time, just `cd` into the folder, run
+`source .venv/bin/activate`, then `python -m netmon demo`.
 
 Demo mode serves a month of synthetic data for a 17-device household, with a
 few planted problems: a smart plug calling out to a botnet IP and random
