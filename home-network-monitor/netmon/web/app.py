@@ -11,7 +11,7 @@ import re
 import secrets
 import time
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any, Callable, Optional
 
 from fastapi import Body, FastAPI, HTTPException, Path as PathParam, Query, Request
 from fastapi.responses import FileResponse, JSONResponse, Response, StreamingResponse
@@ -37,7 +37,7 @@ def label_sql(fallback: str) -> str:
 LABEL_SQL = label_sql("x.device")
 
 
-def _basic_auth_ok(header: str | None, user: str, password: str) -> bool:
+def _basic_auth_ok(header: Optional[str], user: str, password: str) -> bool:
     if not header or not header.lower().startswith("basic "):
         return False
     try:
@@ -50,8 +50,8 @@ def _basic_auth_ok(header: str | None, user: str, password: str) -> bool:
         given_pw.encode(), password.encode())
 
 
-def create_app(store: Store, status_provider: Callable[[], dict[str, Any]] | None = None,
-               auth: tuple[str, str] | None = None) -> FastAPI:
+def create_app(store: Store, status_provider: Optional[Callable[[], dict[str, Any]]] = None,
+               auth: Optional[tuple[str, str]] = None) -> FastAPI:
     app = FastAPI(title="Home Network Monitor", docs_url=None, redoc_url=None, openapi_url=None)
 
     @app.middleware("http")
@@ -79,7 +79,7 @@ def create_app(store: Store, status_provider: Callable[[], dict[str, Any]] | Non
     def index() -> FileResponse:
         return FileResponse(STATIC_DIR / "index.html")
 
-    def _day(day: str | None) -> str:
+    def _day(day: Optional[str]) -> str:
         return day or store.today()
 
     # ----------------------------------------------------------------- health
@@ -90,7 +90,7 @@ def create_app(store: Store, status_provider: Callable[[], dict[str, Any]] | Non
 
     # ---------------------------------------------------------------- summary
     @app.get("/api/summary")
-    def summary(day: str | None = Query(None, pattern=DAY_RE)) -> dict[str, Any]:
+    def summary(day: Optional[str] = Query(None, pattern=DAY_RE)) -> dict[str, Any]:
         day = _day(day)
         start, end = store.day_bounds(day)
         now = time.time()
@@ -137,7 +137,7 @@ def create_app(store: Store, status_provider: Callable[[], dict[str, Any]] | Non
 
     # ---------------------------------------------------------------- devices
     @app.get("/api/devices")
-    def devices(day: str | None = Query(None, pattern=DAY_RE)) -> list[dict[str, Any]]:
+    def devices(day: Optional[str] = Query(None, pattern=DAY_RE)) -> list[dict[str, Any]]:
         day = _day(day)
         now = time.time()
         rows = store.query(
@@ -247,10 +247,10 @@ def create_app(store: Store, status_provider: Callable[[], dict[str, Any]] | Non
     # ---------------------------------------------------------------- domains
     @app.get("/api/domains")
     def domains(
-        day: str | None = Query(None, pattern=DAY_RE),
+        day: Optional[str] = Query(None, pattern=DAY_RE),
         days: int = Query(1, ge=1, le=365),
-        search: str | None = Query(None, max_length=100),
-        device: str | None = Query(None, pattern=MAC_RE),
+        search: Optional[str] = Query(None, max_length=100),
+        device: Optional[str] = Query(None, pattern=MAC_RE),
         group: bool = Query(False),
         limit: int = Query(200, ge=1, le=2000),
     ) -> list[dict[str, Any]]:
@@ -278,9 +278,9 @@ def create_app(store: Store, status_provider: Callable[[], dict[str, Any]] | Non
 
     @app.get("/api/queries")
     def queries(
-        device: str | None = Query(None, pattern=MAC_RE),
-        search: str | None = Query(None, max_length=100),
-        before: int | None = Query(None, ge=0),
+        device: Optional[str] = Query(None, pattern=MAC_RE),
+        search: Optional[str] = Query(None, max_length=100),
+        before: Optional[int] = Query(None, ge=0),
         limit: int = Query(200, ge=1, le=2000),
     ) -> list[dict[str, Any]]:
         where = ["1 = 1"]
@@ -319,8 +319,8 @@ def create_app(store: Store, status_provider: Callable[[], dict[str, Any]] | Non
 
     # ----------------------------------------------------------------- export
     @app.get("/api/export/{table}.csv")
-    def export(table: str, start: str | None = Query(None, pattern=DAY_RE),
-               end: str | None = Query(None, pattern=DAY_RE)) -> StreamingResponse:
+    def export(table: str, start: Optional[str] = Query(None, pattern=DAY_RE),
+               end: Optional[str] = Query(None, pattern=DAY_RE)) -> StreamingResponse:
         if table not in EXPORTABLE_TABLES:
             raise HTTPException(404, "unknown table")
         column = EXPORTABLE_TABLES[table]  # allowlisted identifiers only
