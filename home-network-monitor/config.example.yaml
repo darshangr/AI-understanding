@@ -7,7 +7,7 @@ data_dir: ./data            # SQLite database, threat feeds, OUI registry
 timezone: America/Chicago   # "day" boundaries for daily totals; omit for system time
 
 lan:
-  cidr: 192.168.1.0/24      # AT&T gateways default to 192.168.1.0/24
+  cidr: auto                # or explicit, e.g. 192.168.1.0/24 (the AT&T default)
   gateway_ip: 192.168.1.254 # AT&T gateway address
   interface: null           # e.g. eth0 / wlan0; null = auto
 

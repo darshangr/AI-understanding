@@ -14,6 +14,7 @@ FIXTURES = Path(__file__).parent / "fixtures"
 @pytest.fixture
 def cfg(tmp_path):
     return Config(_deep_merge(DEFAULTS, {"data_dir": str(tmp_path), "feeds": {"sources": []},
+                                         "lan": {"cidr": "192.168.1.0/24"},
                                          "anomaly": {"learning_period_hours": 0}}))
 
 

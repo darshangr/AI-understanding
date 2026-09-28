@@ -9,7 +9,7 @@ import time
 from typing import Any
 
 from .anomaly import AnomalyEngine
-from .config import Config
+from .config import Config, detect_lan_cidr
 from .db import Store
 from .devices import OuiDatabase, guess_device_type, normalize_mac
 from .domains import is_local, normalize
@@ -27,7 +27,11 @@ class Monitor:
         self.cfg = cfg
         self.store = Store(cfg.db_path, cfg.get("timezone"))
         self.oui = OuiDatabase(cfg.data_dir)
-        self.lan = ipaddress.ip_network(cfg.get_path("lan.cidr"), strict=False)
+        cidr = cfg.get_path("lan.cidr") or "auto"
+        if cidr == "auto":
+            cidr = detect_lan_cidr()
+            log.info("home network detected as %s (set lan.cidr to override)", cidr)
+        self.lan = ipaddress.ip_network(cidr, strict=False)
         feeds_cfg = cfg["feeds"]
         self.feeds: ThreatFeeds | None = None
         if feeds_cfg.get("enabled"):

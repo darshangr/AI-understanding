@@ -104,8 +104,13 @@ class OuiDatabase:
 def normalize_mac(mac: str | None) -> str | None:
     if not mac:
         return None
-    hexdigits = re.sub(r"[^0-9a-fA-F]", "", mac)
-    if len(hexdigits) != 12:
+    parts = re.split(r"[:-]", mac.strip())
+    if len(parts) == 6 and all(1 <= len(p) <= 2 for p in parts):
+        # macOS `arp -an` drops leading zeros: 0:17:88:a:2b:c
+        hexdigits = "".join(p.zfill(2) for p in parts)
+    else:
+        hexdigits = re.sub(r"[^0-9a-fA-F]", "", mac)
+    if len(hexdigits) != 12 or not re.fullmatch(r"[0-9a-fA-F]{12}", hexdigits):
         return None
     return ":".join(hexdigits[i:i + 2] for i in range(0, 12, 2)).upper()
 

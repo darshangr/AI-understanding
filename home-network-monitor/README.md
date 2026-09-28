@@ -45,6 +45,43 @@ python -m netmon demo            # then open http://127.0.0.1:8080
 Press Ctrl+C to stop. Next time, just `cd` into the folder, run
 `source .venv/bin/activate`, then `python -m netmon demo`.
 
+## Run it for real on your laptop (5 minutes, no network changes)
+
+Demo mode is always synthetic. To watch your actual network from a Mac or
+Linux laptop that's on your home Wi-Fi:
+
+```bash
+cd home-network-monitor && source .venv/bin/activate
+python -m netmon run --host 127.0.0.1          # open http://127.0.0.1:8080
+```
+
+With no config file it detects your home subnet, scans it every 2 minutes,
+and reads the AT&T gateway's device list at `192.168.1.254`. Within a few
+minutes the **Devices** tab lists your real phones, TVs, speakers and so on.
+The gateway list includes devices that are currently offline. Data is saved
+in `./data`, so history builds up while it runs.
+
+For a more complete scan, and to see the laptop's own domains and traffic,
+run it as root with the packet sniffer:
+
+```bash
+sudo .venv/bin/python -m netmon run --host 127.0.0.1 -c config.yaml
+```
+
+Use a `config.yaml` copied from `config.example.yaml` with
+`collectors.sniffer.enabled: true` and `collectors.dns_proxy.enabled: false`.
+The sniffer also picks up the names devices announce over DHCP and
+AirPlay/Chromecast (mDNS).
+
+What a laptop can and can't see:
+
+- **Can see:** every device on the network, whole-home upload/download from
+  the gateway counters, and its own traffic.
+- **Can't see:** other devices' domains and bandwidth. Wi-Fi traffic between
+  your TV and the gateway never reaches your laptop. Seeing that requires the
+  always-on setup below (Steps 1–3). A laptop also stops monitoring when it
+  sleeps.
+
 Demo mode serves a month of synthetic data for a 17-device household, with a
 few planted problems: a smart plug calling out to a botnet IP and random
 domains, a doorbell camera uploading 12x its normal amount, a phishing lookup

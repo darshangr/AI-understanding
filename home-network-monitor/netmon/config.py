@@ -18,7 +18,7 @@ DEFAULTS: dict[str, Any] = {
     "data_dir": "./data",
     "timezone": None,  # None = system local time; used for "day" buckets
     "lan": {
-        "cidr": "192.168.1.0/24",
+        "cidr": "auto",  # "auto" = the /24 of this machine's primary IPv4 address
         "interface": None,  # None = scapy default interface
         "gateway_ip": "192.168.1.254",
     },
@@ -130,6 +130,26 @@ def load_config(path: str | os.PathLike[str] | None = None) -> Config:
     if os.getenv("NETMON_DATA_DIR"):
         cfg["data_dir"] = os.environ["NETMON_DATA_DIR"]
     return cfg
+
+
+def detect_lan_cidr(fallback: str = "192.168.1.0/24") -> str:
+    """Guess the home subnet from the address used to reach the internet.
+
+    Connecting a UDP socket sends no packets; it only selects a route.
+    """
+    import ipaddress
+    import socket
+
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
+            sock.connect(("192.0.2.1", 9))
+            ip = sock.getsockname()[0]
+    except OSError:
+        return fallback
+    addr = ipaddress.ip_address(ip)
+    if not addr.is_private or addr.is_loopback:
+        return fallback
+    return str(ipaddress.ip_network(f"{ip}/24", strict=False))
 
 
 def secret(name: str) -> str | None:

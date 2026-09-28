@@ -66,7 +66,8 @@ def cmd_demo(args: argparse.Namespace) -> None:
     from .web.app import create_app
 
     data_dir = Path(args.data_dir) if args.data_dir else Path(tempfile.mkdtemp(prefix="netmon-demo-"))
-    cfg = Config(_deep_merge(DEFAULTS, {"data_dir": str(data_dir), "feeds": {"sources": []}}))
+    cfg = Config(_deep_merge(DEFAULTS, {"data_dir": str(data_dir), "feeds": {"sources": []},
+                                        "lan": {"cidr": "192.168.1.0/24"}}))
     db_exists = cfg.db_path.exists()
     monitor = Monitor(cfg)
     if not db_exists:

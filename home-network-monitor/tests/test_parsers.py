@@ -104,6 +104,29 @@ def test_proc_arp(tmp_path):
     assert read_proc_arp(str(arp)) == [("192.168.1.254", "e0:37:17:aa:bb:cc")]
 
 
+def test_macos_arp_output(monkeypatch):
+    import subprocess
+    from netmon.collectors import discovery
+
+    out = ("? (192.168.1.64) at 8c:85:90:1a:2b:1 on en0 ifscope [ethernet]\n"
+           "? (192.168.1.70) at 0:17:88:a:2b:c on en0 ifscope [ethernet]\n"
+           "? (192.168.1.99) at (incomplete) on en0 ifscope [ethernet]\n"
+           "gateway (192.168.1.254) at e0:37:17:aa:bb:cc on en0 ifscope [ethernet]\n")
+    monkeypatch.setattr(subprocess, "run", lambda *a, **k: subprocess.CompletedProcess(a, 0, stdout=out))
+    entries = discovery.read_arp_command()
+    assert [ip for ip, _ in entries] == ["192.168.1.64", "192.168.1.70", "192.168.1.254"]
+    assert [normalize_mac(mac) for _, mac in entries] == [
+        "8C:85:90:1A:2B:01", "00:17:88:0A:2B:0C", "E0:37:17:AA:BB:CC"]
+    assert normalize_mac("not:a:mac:at:all:zz") is None
+
+
+def test_detect_lan_cidr():
+    import ipaddress
+    from netmon.config import detect_lan_cidr
+    net = ipaddress.ip_network(detect_lan_cidr())
+    assert net.prefixlen == 24 and net.is_private
+
+
 def test_dnsmasq_leases(tmp_path):
     from netmon.collectors.discovery import read_dnsmasq_leases
     leases = tmp_path / "leases"
