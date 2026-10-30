@@ -1,6 +1,11 @@
 # AI understanding — interactive guide
 
-Static, offline-friendly HTML explaining **tokens**, **vectors / embeddings**, **how embeddings are learned**, **transformers**, **autoregressive generation**, **agents**, and **token efficiency**. Includes SVG animations and small interactive demos (temperature / top-p, cosine similarity, toy “training” clustering).
+Static, offline-friendly HTML explaining **tokens**, **vectors / embeddings**, **how embeddings are learned**, **transformers**, **autoregressive generation**, **agents**, **token efficiency**, **how coding & mobile-dev models are built**, **financial sentiment vs. coding LLM math**, **code tokens & execution evals**, and **custom fine-tuning vs. `AGENTS.md` & skills**. Includes SVG animations and interactive demos.
+
+## Offline Airplane Downloads (PDF & Word)
+
+- **[coding-models-airplane-guide.pdf](./coding-models-airplane-guide.pdf)** — Multi-page visual PDF with SVG diagrams, equations, and comparison tables.
+- **[coding-models-airplane-guide.docx](./coding-models-airplane-guide.docx)** — Editable Microsoft Word `.docx` edition.
 
 ## Read it on the web
 
