@@ -1,6 +1,6 @@
 # AI understanding — interactive guide
 
-Static, offline-friendly HTML explaining **tokens**, **vectors / embeddings**, **how embeddings are learned**, **transformers**, **autoregressive generation**, **agents**, and **token efficiency**. Includes SVG animations and small interactive demos (temperature / top-p, cosine similarity, toy “training” clustering).
+Static, offline-friendly HTML explaining **tokens**, **vectors / embeddings**, **how embeddings are learned**, **transformers**, **autoregressive generation**, **agents**, **token efficiency**, **how coding & mobile-dev models are built**, **financial sentiment vs. coding LLM math**, **code tokens & execution evals**, and **custom fine-tuning vs. `AGENTS.md` & skills**. Includes SVG animations and interactive demos.
 
 ## Read it on the web
 

@@ -187,6 +187,10 @@
       <button role="tab" id="tab-generation" aria-selected="false" aria-controls="panel-generation" tabindex="-1">Generation</button>
       <button role="tab" id="tab-agents" aria-selected="false" aria-controls="panel-agents" tabindex="-1">Agents</button>
       <button role="tab" id="tab-optimize" aria-selected="false" aria-controls="panel-optimize" tabindex="-1">Token efficiency</button>
+      <button role="tab" id="tab-coding-hl" aria-selected="false" aria-controls="panel-coding-hl" tabindex="-1">Coding &amp; Mobile (High-Level)</button>
+      <button role="tab" id="tab-coding-math" aria-selected="false" aria-controls="panel-coding-math" tabindex="-1">Sentiment vs Code Math</button>
+      <button role="tab" id="tab-tokens-evals" aria-selected="false" aria-controls="panel-tokens-evals" tabindex="-1">Code Tokens &amp; Evals</button>
+      <button role="tab" id="tab-codebase" aria-selected="false" aria-controls="panel-codebase" tabindex="-1">Fine-Tuning vs AGENTS.md</button>
     </div>
 
     <!-- ============================== OVERVIEW ============================== -->
@@ -799,6 +803,180 @@
       </ul>
       <div class="callout green">
         Measure before you optimize. Log <em>tokens-in / tokens-out per request</em> and per tool. The biggest cost is usually one tool you forgot you had.
+      </div>
+    </section>
+
+    <!-- ============================== CODING & MOBILE (HIGH-LEVEL) ============================== -->
+    <section class="panel" role="tabpanel" id="panel-coding-hl" aria-labelledby="tab-coding-hl" hidden>
+      <h2>How a Coding Model is Built (Mobile App Development Lens) <span class="badge">High-Level</span></h2>
+      <p class="lead">
+        A coding LLM is not built by hand-coding compiler rules. It goes through a <strong>4-stage training pipeline</strong> that transforms a raw text predictor into an engineering partner capable of writing SwiftUI, Jetpack Compose, or React Native apps and debugging Gradle/Xcode builds.
+      </p>
+
+      <h3>1. The 4-Stage Factory Pipeline</h3>
+      <div class="diagram-wrap">
+        <svg class="diagram anim" viewBox="0 0 900 290" xmlns="http://www.w3.org/2000/svg" aria-label="Coding model 4-stage training pipeline">
+          <rect width="900" height="290" fill="#0b1018" rx="8" />
+          <text x="450" y="30" text-anchor="middle" fill="#e8eef7" font-size="14" font-weight="600">From Raw GitHub Repos to Mobile App Engineering Agent</text>
+
+          <rect x="25" y="55" width="190" height="125" rx="8" fill="#1a2638" stroke="#6eb5ff" />
+          <text x="120" y="80" text-anchor="middle" fill="#6eb5ff" font-size="13" font-weight="600">1. Pre-Training</text>
+          <text x="120" y="100" text-anchor="middle" fill="#e8eef7" font-size="11">10T–15T+ tokens</text>
+          <text x="120" y="120" text-anchor="middle" fill="#9fb0c8" font-size="10">Swift, Kotlin, JS, docs,</text>
+          <text x="120" y="135" text-anchor="middle" fill="#9fb0c8" font-size="10">PR diffs, StackOverflow</text>
+          <text x="120" y="160" text-anchor="middle" fill="#7ee787" font-size="10">Learns syntax &amp; APIs</text>
+
+          <rect x="245" y="55" width="190" height="125" rx="8" fill="#1a2638" stroke="#7ee787" />
+          <text x="340" y="80" text-anchor="middle" fill="#7ee787" font-size="13" font-weight="600">2. Mid-Training (FIM)</text>
+          <text x="340" y="100" text-anchor="middle" fill="#e8eef7" font-size="11">Repo-level + Long Context</text>
+          <text x="340" y="120" text-anchor="middle" fill="#9fb0c8" font-size="10">Fill-in-the-Middle (FIM)</text>
+          <text x="340" y="135" text-anchor="middle" fill="#9fb0c8" font-size="10">32k → 200k+ token window</text>
+          <text x="340" y="160" text-anchor="middle" fill="#7ee787" font-size="10">Learns multi-file links</text>
+
+          <rect x="465" y="55" width="190" height="125" rx="8" fill="#1a2638" stroke="#ffc857" />
+          <text x="560" y="80" text-anchor="middle" fill="#ffc857" font-size="13" font-weight="600">3. SFT (Instruction)</text>
+          <text x="560" y="100" text-anchor="middle" fill="#e8eef7" font-size="11">100k–1M curated trajectories</text>
+          <text x="560" y="120" text-anchor="middle" fill="#9fb0c8" font-size="10">(Prompt → Plan → Edit)</text>
+          <text x="560" y="135" text-anchor="middle" fill="#9fb0c8" font-size="10">Tool calls, diffs, tests</text>
+          <text x="560" y="160" text-anchor="middle" fill="#7ee787" font-size="10">Learns assistant behavior</text>
+
+          <rect x="685" y="55" width="190" height="125" rx="8" fill="#1a2638" stroke="#fca5a5" />
+          <text x="780" y="80" text-anchor="middle" fill="#fca5a5" font-size="13" font-weight="600">4. RLVR (Execution RL)</text>
+          <text x="780" y="100" text-anchor="middle" fill="#e8eef7" font-size="11">Compiler &amp; Test Rewards</text>
+          <text x="780" y="120" text-anchor="middle" fill="#9fb0c8" font-size="10">xcodebuild / gradlew</text>
+          <text x="780" y="135" text-anchor="middle" fill="#9fb0c8" font-size="10">XCTest / JUnit pass/fail</text>
+          <text x="780" y="160" text-anchor="middle" fill="#7ee787" font-size="10">Learns to self-correct</text>
+
+          <rect x="25" y="205" width="850" height="65" rx="8" fill="#0d1c2c" stroke="#6eb5ff" />
+          <text x="450" y="230" text-anchor="middle" fill="#e8eef7" font-size="12" font-weight="600">Mobile App Development Specifics Learned Across Stages</text>
+          <text x="450" y="252" text-anchor="middle" fill="#9fb0c8" font-size="11">Declarative UI (SwiftUI / Compose) · Lifecycle &amp; Threading (MainActor / Coroutines) · Platform Configs (Info.plist / AndroidManifest.xml / Podfile / build.gradle.kts)</text>
+        </svg>
+      </div>
+
+      <h3>2. Why Mobile App Development is Uniquely Challenging for Models</h3>
+      <div class="grid2">
+        <div class="card"><h4>Fast SDK Deprecation Cycles</h4><p>iOS and Android SDKs evolve yearly. Old training data contains <code>UIViewController</code>, <code>NavigationView</code>, or Android <code>AsyncTask</code>, while modern apps expect <code>@Observable</code>, <code>NavigationStack</code>, and Kotlin Coroutines/Compose.</p></div>
+        <div class="card"><h4>Cross-Layer Coupling</h4><p>A single mobile feature touches UI code (Swift/Kotlin), native config (<code>Info.plist</code> / <code>AndroidManifest.xml</code>), dependency graphs (<code>Podfile</code> / <code>libs.versions.toml</code>), and GraphQL/REST schemas.</p></div>
+        <div class="card"><h4>Implicit Lifecycle &amp; State</h4><p>Mobile apps get backgrounded, rotated, and memory-killed. Models must reason about retain cycles (<code>[weak self]</code>), Compose recomposition stability, and main-thread UI rules.</p></div>
+        <div class="card"><h4>Heavyweight Build Loops</h4><p>Unlike Python scripts that run in 50ms, verifying an iOS Simulator or Android Gradle build takes seconds to minutes — making fast unit-test slices critical during RL training.</p></div>
+      </div>
+    </section>
+
+    <!-- ============================== SENTIMENT VS CODE MATH ============================== -->
+    <section class="panel" role="tabpanel" id="panel-coding-math" aria-labelledby="tab-coding-math" hidden>
+      <h2>Financial Sentiment Model vs. Coding LLM <span class="badge">Technical &amp; Math</span></h2>
+      <p class="lead">
+        If you have built a sentiment analysis model for publicly traded companies on historical data (10-Ks, earnings calls, headlines), you already know 70% of the mathematical foundations. Here is how the math scales from predicting <em>Bearish / Neutral / Bullish</em> to generating working mobile apps.
+      </p>
+
+      <h3>1. Architecture &amp; Objective Comparison</h3>
+      <table class="kv">
+        <tr><th>Dimension</th><th>Stock Sentiment Model (e.g. FinBERT / LSTM / XGBoost)</th><th>Coding LLM (e.g. Claude / GPT / DeepSeek-Coder / Qwen-Coder)</th></tr>
+        <tr><td><strong>Task Mapping</strong></td><td>Sequence-to-One Classification: <code>f(X) → y ∈ {-1, 0, +1}</code></td><td>Autoregressive Generation: <code>P(x_t | x_1, ..., x_{t-1})</code></td></tr>
+        <tr><td><strong>Attention Mask</strong></td><td>Bidirectional (Encoder sees full headline at once)</td><td>Causal Lower-Triangular Mask (Token <code>t</code> only sees <code>≤ t</code>)</td></tr>
+        <tr><td><strong>Output Head</strong></td><td><code>Linear(d_model, 3)</code> + Softmax over 3 sentiment classes</td><td><code>Linear(d_model, |V|)</code> + Softmax over ~100,000+ code/text tokens</td></tr>
+        <tr><td><strong>Loss Function</strong></td><td>Cross-Entropy over 3 classes or MSE on forward return</td><td>Cross-Entropy over every next token + FIM + RL execution reward</td></tr>
+        <tr><td><strong>Time-Series Pitfall</strong></td><td>Lookahead bias / market regime change</td><td>SDK deprecation drift (e.g., iOS 14 APIs vs iOS 18 APIs)</td></tr>
+      </table>
+
+      <h3>2. The Core Equations</h3>
+      <div class="card" style="margin-bottom:0.85rem;">
+        <h4>A. Your Sentiment Model: Sequence Classification Loss</h4>
+        <p>Given token sequence <code>X = (x_1, ..., x_T)</code> pooled into a single hidden vector <code>h ∈ ℝ^d</code>, with <code>C = 3</code> classes (Bearish, Neutral, Bullish):</p>
+        <p style="font-family:var(--mono); color:#b6dcff; margin-top:0.4rem;">P(y = c | X) = exp(W_c · h + b_c) / Σ_j exp(W_j · h + b_j) &nbsp;&nbsp;|&nbsp;&nbsp; L_sentiment = - Σ_{c=1}^3 y_c log P(y = c | X)</p>
+      </div>
+      <div class="card" style="margin-bottom:0.85rem;">
+        <h4>B. Coding Model Stage 1: Autoregressive Next-Token Loss</h4>
+        <p>Instead of one label per document, every single token in a Swift or Kotlin file is a classification target over vocabulary <code>V</code> (where <code>|V| ≈ 100,000–128,000</code>):</p>
+        <p style="font-family:var(--mono); color:#b6dcff; margin-top:0.4rem;">L_CLM(θ) = - Σ_{t=1}^T log P_θ(x_t | x_1, x_2, ..., x_{t-1})</p>
+      </div>
+      <div class="card" style="margin-bottom:0.85rem;">
+        <h4>C. Coding Model Stage 2: Fill-in-the-Middle (FIM) Objective</h4>
+        <p>When coding in Xcode or Cursor, your cursor is in the middle of a file: you have code <em>before</em> (Prefix) and code <em>after</em> (Suffix). During training, ~50% of files are split into <code>(Prefix, Middle, Suffix)</code> and rearranged so a causal decoder can learn to bridge them:</p>
+        <p style="font-family:var(--mono); color:#b6dcff; margin-top:0.4rem;">[FIM_PREFIX] {Prefix} [FIM_SUFFIX] {Suffix} [FIM_MIDDLE] {Middle} [EOS]</p>
+      </div>
+      <div class="card">
+        <h4>D. Coding Model Stage 4: RL with Verifiable Rewards (GRPO / PPO)</h4>
+        <p>In finance, market return rewards are noisy (a great earnings report can still drop 5% on macro news). In coding, rewards are <strong>deterministic and verifiable</strong>: does <code>xcodebuild test</code> compile and pass? Group Relative Policy Optimization (GRPO) samples <code>G</code> candidate solutions, runs them in a sandbox, scores each with <code>r_i ∈ {0, 1}</code>, normalizes advantage <code>A_i = (r_i - mean(r)) / std(r)</code>, and updates weights toward code that compiles and passes tests.</p>
+      </div>
+    </section>
+
+    <!-- ============================== CODE TOKENS & EVALS ============================== -->
+    <section class="panel" role="tabpanel" id="panel-tokens-evals" aria-labelledby="tab-tokens-evals" hidden>
+      <h2>What Are Tokens and Evals in Coding &amp; Mobile Dev?</h2>
+      <p class="lead">
+        In sentiment analysis, tokens are mostly English words and evals are F1/AUC or backtest Sharpe. In software engineering, both take on specialized meanings.
+      </p>
+
+      <h3>1. How Code Tokenization Works (Byte-Pair Encoding)</h3>
+      <p>
+        Modern coding tokenizers (like <code>cl100k_base</code> or <code>o200k_base</code>) use Byte-Pair Encoding (BPE) trained specifically on source code:
+      </p>
+      <ul>
+        <li><strong>Whitespace Merging:</strong> 4 spaces (<code>"    "</code>) or 8 spaces are merged into a <em>single token</em> so indentation in Swift/Python/Kotlin doesn't blow up sequence length.</li>
+        <li><strong>Identifier Splitting:</strong> <code>@StateObject private var viewModel = CheckoutViewModel()</code> splits along camelCase/PascalCase boundaries: <code>["@State", "Object", " private", " var", " viewModel", " =", " Checkout", "ViewModel", "()"]</code>.</li>
+        <li><strong>Digit Splitting:</strong> Numbers are split into 1–3 digit chunks (e.g., <code>2026</code> → <code>"202", "6"</code> or <code>"20", "26"</code>) so models can do arithmetic consistently.</li>
+        <li><strong>Mobile Token Traps:</strong> Xcode's <code>project.pbxproj</code> UUIDs, base64 assets, and verbose Gradle stack traces have terrible token compression and rapidly exhaust your context window.</li>
+      </ul>
+
+      <h3>2. What Are "Evals" in Coding Models?</h3>
+      <p>
+        In sentiment analysis, you evaluate against a static ground-truth label (Positive/Negative). Why doesn't static text comparison work for code? Because <strong>ten completely different Swift implementations can all be 100% correct</strong>, while a response that matches 99% of characters but misses one closing brace <code>}</code> is 100% broken.
+      </p>
+      <div class="diagram-wrap">
+        <svg class="diagram" viewBox="0 0 900 230" xmlns="http://www.w3.org/2000/svg" aria-label="Execution based evals pipeline">
+          <rect width="900" height="230" fill="#0b1018" rx="8" />
+          <text x="450" y="30" text-anchor="middle" fill="#e8eef7" font-size="14" font-weight="600">The Execution Eval Loop (pass@k &amp; SWE-bench)</text>
+          <rect x="30" y="60" width="180" height="70" rx="8" fill="#1a2638" stroke="#6eb5ff" />
+          <text x="120" y="90" text-anchor="middle" fill="#e8eef7" font-size="12" font-weight="600">1. Task + Repo Snapshot</text>
+          <text x="120" y="110" text-anchor="middle" fill="#9fb0c8" font-size="10">GitHub issue + git commit</text>
+
+          <rect x="245" y="60" width="180" height="70" rx="8" fill="#1a2638" stroke="#7ee787" />
+          <text x="335" y="90" text-anchor="middle" fill="#e8eef7" font-size="12" font-weight="600">2. Generate k Patches</text>
+          <text x="335" y="110" text-anchor="middle" fill="#9fb0c8" font-size="10">Model edits Swift/Kotlin files</text>
+
+          <rect x="460" y="60" width="190" height="70" rx="8" fill="#1a2638" stroke="#ffc857" />
+          <text x="555" y="90" text-anchor="middle" fill="#e8eef7" font-size="12" font-weight="600">3. Container Sandbox</text>
+          <text x="555" y="110" text-anchor="middle" fill="#9fb0c8" font-size="10">Compile + Run Hidden Tests</text>
+
+          <rect x="685" y="60" width="185" height="70" rx="8" fill="#0d1f15" stroke="#7ee787" />
+          <text x="777" y="90" text-anchor="middle" fill="#7ee787" font-size="12" font-weight="600">4. Verifiable Score</text>
+          <text x="777" y="110" text-anchor="middle" fill="#9fb0c8" font-size="10">Fail-to-Pass &amp; Pass-to-Pass</text>
+
+          <text x="450" y="175" text-anchor="middle" fill="#b6dcff" font-size="12" font-family="ui-monospace, monospace">pass@k = 1 - C(n - c, k) / C(n, k)   (probability at least 1 of k samples passes all unit tests)</text>
+          <text x="450" y="202" text-anchor="middle" fill="#9fb0c8" font-size="11">Mobile Evals: Compile gate (xcodebuild / gradlew) → Unit tests (XCTest / JUnit) → UI/Snapshot tests (XCUITest / Compose Test)</text>
+        </svg>
+      </div>
+    </section>
+
+    <!-- ============================== FINE-TUNING VS AGENTS.MD ============================== -->
+    <section class="panel" role="tabpanel" id="panel-codebase" aria-labelledby="tab-codebase" hidden>
+      <h2>Existing Codebase: Custom Model / Fine-Tuning vs. <code>AGENTS.md</code> &amp; Skills</h2>
+      <p class="lead">
+        "Can a model be created or tweaked specifically for an existing codebase, or is that more the department of <code>AGENTS.md</code> and Skills?" — This is the single most important architectural question in modern AI engineering.
+      </p>
+
+      <h3>1. Why Fine-Tuning on Your Repo Usually Disappoints</h3>
+      <p>
+        In your stock sentiment work, if you trained a model on 2018–2021 filings and never updated the weights, it wouldn't know about new 2026 tickers or macro regimes. A living codebase changes <strong>every single day via git commits</strong>:
+      </p>
+      <ul>
+        <li><strong>Weight Staleness:</strong> If you LoRA fine-tune a model on Tuesday, and on Thursday your team refactors <code>AuthManager</code> into <code>SessionCoordinator</code>, the fine-tuned weights will hallucinate calls to the deleted <code>AuthManager</code>.</li>
+        <li><strong>Parametric vs. Non-Parametric Memory:</strong> Neural network weights (<em>parametric memory</em>) are fuzzy and slow to update; they are great at learning <em>skills and syntax</em>, but terrible at memorizing exact file paths and Today's API signatures.</li>
+      </ul>
+
+      <h3>2. The Decision Matrix: What Belongs Where?</h3>
+      <table class="kv">
+        <tr><th>Approach</th><th>What It Modifies</th><th>Best Used For</th><th>Verdict for Existing Mobile Codebase</th></tr>
+        <tr><td><strong>Train From Scratch</strong></td><td>All weights <code>θ</code> (billions of params)</td><td>Frontier AI labs with $10M–$100M+ compute &amp; trillions of tokens</td><td><strong>Never</strong> for a company codebase.</td></tr>
+        <tr><td><strong>Fine-Tuning (LoRA / SFT)</strong></td><td>Low-rank weight adapters <code>ΔW = B·A</code></td><td>Proprietary internal languages (DSLs), strict on-device/air-gapped deployment, or small fast Tab-autocomplete models</td><td><strong>Rarely (~5% of cases)</strong> — only for proprietary DSLs or latency-critical small models.</td></tr>
+        <tr><td><strong>RAG / Codebase Indexing</strong></td><td>Retrieved context chunks <code>C</code></td><td>Finding exact definitions, call sites, and implementations across 5,000+ Swift/Kotlin files</td><td><strong>Essential</strong> — keeps the model grounded in the current git branch.</td></tr>
+        <tr><td><strong><code>AGENTS.md</code> &amp; Rules</strong></td><td>Always-on system conditioning</td><td>Architecture laws (MVVM/MVI), build/test commands (<code>./gradlew test</code>), forbidden deprecated APIs</td><td><strong>Primary Lever (#1 ROI)</strong> — instant, version-controlled in git, zero training cost.</td></tr>
+        <tr><td><strong>Skills (<code>SKILL.md</code>)</strong></td><td>On-demand procedural workflows</td><td>Step-by-step playbooks: "Scaffold a new feature module", "Run iOS snapshot tests", "Migrate UIKit view to SwiftUI"</td><td><strong>Primary Lever (#1 ROI)</strong> — keeps context lean until that specific workflow is needed.</td></tr>
+      </table>
+
+      <div class="callout green">
+        <strong>Bottom-Line Rule of Thumb:</strong> Use <strong>frontier model weights</strong> for general coding intelligence, <strong>Codebase Indexing / Search tools</strong> for "what exists in the repo right now", <strong><code>AGENTS.md</code></strong> for "the rules of this repo", and <strong><code>SKILL.md</code></strong> for "how to execute complex multi-step tasks in this repo."
       </div>
     </section>
 
