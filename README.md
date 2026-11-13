@@ -18,6 +18,20 @@ Your site URL will be:
 
 You can also open `index.html` directly on GitHub via **Code** → click `index.html` → **Raw** is less readable; prefer the Pages URL above.
 
+## Science fair project guide
+
+`science-fair/frame-rate-project.html` is a printable, 13-page guide for a kids' science fair project: *How fast do drawings need to move to become a movie?* (frame rate, persistence of vision, and the phi phenomenon). It covers the background science, a zoetrope build, a digital flipbook, the procedure, a data sheet, graphs, a display board plan, and parent notes. The web version also includes an FPS tester with a hidden-speed "mystery mode" for running volunteers.
+
+- Web: **https://darshangr.github.io/AI-understanding/science-fair/frame-rate-project.html**
+- PDF (for printing or emailing): `science-fair/frame-rate-project.pdf`
+
+To regenerate the PDF after editing the HTML:
+
+```bash
+google-chrome --headless=new --no-pdf-header-footer --virtual-time-budget=2000 \
+  --print-to-pdf=science-fair/frame-rate-project.pdf science-fair/frame-rate-project.html
+```
+
 ## Local preview
 
 ```bash

@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>How Fast Do Drawings Need to Move to Become a Movie? — Science Fair Project Guide</title>
+<style>
+  :root {
+    --ink: #1d2433;
+    --muted: #5b6577;
+    --accent: #1f6feb;
+    --accent-soft: #e8f0fe;
+    --warm: #b35c00;
+    --warm-soft: #fff4e5;
+    --line: #d5dbe5;
+    --paper: #ffffff;
+    --desk: #eef1f5;
+    --font: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+    --hand: "Comic Sans MS", "Chalkboard SE", "Marker Felt", var(--font);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--desk);
+    color: var(--ink);
+    font-family: var(--font);
+    font-size: 10.5pt;
+    line-height: 1.38;
+  }
+
+  /* ---------- Page layout (US Letter) ---------- */
+  @page { size: Letter; margin: 0; }
+  .page {
+    width: 8.5in;
+    height: 11in;
+    margin: 0.35in auto;
+    padding: 0.5in 0.65in 0.7in;
+    background: var(--paper);
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--line);
+  }
+  .page-footer {
+    position: absolute;
+    left: 0.7in; right: 0.7in; bottom: 0.35in;
+    display: flex; justify-content: space-between;
+    font-size: 8.5pt; color: var(--muted);
+    border-top: 1px solid var(--line);
+    padding-top: 0.08in;
+  }
+  @media print {
+    body { background: none; }
+    .page { margin: 0; border: none; page-break-after: always; break-after: page; }
+    .page:last-of-type { page-break-after: auto; break-after: auto; }
+    .screen-only { display: none !important; }
+  }
+  @media screen and (max-width: 8.8in) {
+    .page { width: auto; height: auto; min-height: 0; margin: 0.5rem; padding: 1.25rem 1.25rem 3rem; }
+  }
+
+  /* ---------- Type ---------- */
+  h1, h2, h3 { line-height: 1.2; margin: 0; }
+  h2 {
+    font-size: 18pt; letter-spacing: -0.01em;
+    padding-bottom: 0.06in; margin-bottom: 0.12in;
+    border-bottom: 2px solid var(--ink);
+  }
+  h2 .step {
+    display: inline-block; font-size: 10pt; font-weight: 600;
+    color: var(--accent); text-transform: uppercase; letter-spacing: 0.08em;
+    margin-bottom: 0.04in;
+  }
+  h3 { font-size: 11.5pt; margin: 0.12in 0 0.04in; }
+  p { margin: 0 0 0.08in; }
+  ul, ol { margin: 0 0 0.08in; padding-left: 0.25in; }
+  li { margin-bottom: 0.02in; }
+  .muted { color: var(--muted); }
+  .small { font-size: 9pt; }
+  strong { font-weight: 650; }
+
+  /* ---------- Blocks ---------- */
+  .callout {
+    background: var(--accent-soft);
+    border-left: 4px solid var(--accent);
+    padding: 0.08in 0.14in;
+    margin: 0.1in 0;
+    border-radius: 4px;
+  }
+  .callout.warm { background: var(--warm-soft); border-left-color: var(--warm); }
+  .callout p:last-child, .callout ul:last-child { margin-bottom: 0; }
+  .label {
+    font-size: 8.5pt; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 0.03in;
+  }
+  .callout.warm .label { color: var(--warm); }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0.25in; }
+  .cols-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.18in; }
+  .box { border: 1px solid var(--line); border-radius: 6px; padding: 0.12in 0.14in; }
+  .box h3 { margin-top: 0; }
+  .write-line {
+    border-bottom: 1px solid #9aa4b5;
+    height: 0.32in;
+  }
+  .fill {
+    display: inline-block; min-width: 1.2in;
+    border-bottom: 1px solid #9aa4b5; height: 1em;
+  }
+  .hand { font-family: var(--hand); }
+
+  table { border-collapse: collapse; width: 100%; font-size: 9.5pt; }
+  th, td { border: 1px solid var(--line); padding: 0.035in 0.07in; text-align: left; vertical-align: top; }
+  th { background: #f4f6fa; font-weight: 650; }
+  table.data td, table.data th { text-align: center; height: 0.3in; vertical-align: middle; }
+  table.data th:first-child, table.data td:first-child { width: 0.55in; }
+
+  .vocab dt { font-weight: 700; margin-top: 0.07in; }
+  .vocab dd { margin: 0 0 0 0.2in; }
+
+  figure { margin: 0.1in 0; }
+  figcaption { font-size: 9pt; color: var(--muted); text-align: center; margin-top: 0.04in; }
+  svg text { font-family: var(--font); }
+
+  /* ---------- Cover ---------- */
+  .cover { display: flex; flex-direction: column; }
+  .cover .kicker {
+    font-size: 10pt; font-weight: 700; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--accent);
+  }
+  .cover h1 { font-size: 30pt; letter-spacing: -0.02em; margin: 0.12in 0 0.14in; }
+  .cover .sub { font-size: 14pt; color: var(--muted); margin-bottom: 0.3in; }
+  .tags { display: flex; gap: 0.08in; flex-wrap: wrap; margin-bottom: 0.3in; }
+  .tag {
+    font-size: 9.5pt; padding: 0.03in 0.12in; border-radius: 999px;
+    border: 1px solid var(--line); color: var(--muted);
+  }
+  .toc { columns: 2; column-gap: 0.4in; font-size: 10.5pt; padding-left: 0.2in; }
+  .toc li { break-inside: avoid; }
+
+  /* ---------- Tester (screen only) ---------- */
+  .tester canvas {
+    width: 100%; max-width: 6.8in; aspect-ratio: 16 / 10;
+    border: 1px solid var(--line); border-radius: 6px; background: #fff; display: block;
+  }
+  .tester .controls { display: flex; flex-wrap: wrap; gap: 0.06in; margin: 0.1in 0; align-items: center; }
+  .tester button, .tester label.file {
+    font: inherit; font-size: 10pt; padding: 0.05in 0.12in; border-radius: 6px;
+    border: 1px solid var(--line); background: #fff; color: var(--ink); cursor: pointer;
+  }
+  .tester button.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .tester button.primary { border-color: var(--accent); color: var(--accent); font-weight: 600; }
+  .tester input[type=file] { display: none; }
+  .tester .status { font-size: 10pt; color: var(--muted); margin-left: auto; }
+  .tester .readout { font-size: 15pt; font-weight: 700; min-height: 1.4em; }
+</style>
+</head>
+<body>
+
+<!-- =============================== PAGE 1: COVER =============================== -->
+<section class="page cover">
+  <div class="kicker">Science Fair Project Guide</div>
+  <h1>How Fast Do Drawings Need to Move to Become a Movie?</h1>
+  <div class="sub">Testing frame rate, persistence of vision, and the phi phenomenon with a hand-drawn car chase</div>
+
+  <div class="tags">
+    <span class="tag">Eyes &amp; vision science</span>
+    <span class="tag">Movies &amp; animation</span>
+    <span class="tag">Engineering (zoetrope build)</span>
+    <span class="tag">Ages 9–11</span>
+  </div>
+
+  <figure>
+    <svg viewBox="0 0 680 230" width="100%" role="img" aria-label="Six drawings of a car moving left to right blend into one moving car">
+      <g transform="translate(10,20)">
+        <g>
+          <rect x="0" y="0" width="92" height="74" rx="6" fill="#fff" stroke="#9aa4b5" stroke-width="1.4"/>
+          <path d="M10 52 h34 l-4 -12 h-20 z M10 52 v-6 h40 v6" fill="none" stroke="#1d2433" stroke-width="2"/>
+          <circle cx="18" cy="54" r="5" fill="#fff" stroke="#1d2433" stroke-width="2"/><circle cx="42" cy="54" r="5" fill="#fff" stroke="#1d2433" stroke-width="2"/>
+          <text x="46" y="70" font-size="9" fill="#5b6577" text-anchor="middle">1</text>
+        </g>
+        <g transform="translate(110,0)">
+          <rect x="0" y="0" width="92" height="74" rx="6" fill="#fff" stroke="#9aa4b5" stroke-width="1.4"/>
+          <path d="M20 52 h34 l-4 -12 h-20 z M20 52 v-6 h40 v6" fill="none" stroke="#1d2433" stroke-width="2"/>
+          <circle cx="28" cy="54" r="5" fill="#fff" stroke="#1d2433" stroke-width="2"/><circle cx="52" cy="54" r="5" fill="#fff" stroke="#1d2433" stroke-width="2"/>
+          <text x="46" y="70" font-size="9" fill="#5b6577" text-anchor="middle">2</text>
+        </g>
+        <g transform="translate(220,0)">
+          <rect x="0" y="0" width="92" height="74" rx="6" fill="#fff" stroke="#9aa4b5" stroke-width="1.4"/>
+          <path d="M30 52 h34 l-4 -12 h-20 z M30 52 v-6 h40 v6" fill="none" stroke="#1d2433" stroke-width="2"/>
+          <circle cx="38" cy="54" r="5" fill="#fff" stroke="#1d2433" stroke-width="2"/><circle cx="62" cy="54" r="5" fill="#fff" stroke="#1d2433" stroke-width="2"/>
+          <text x="46" y="70" font-size="9" fill="#5b6577" text-anchor="middle">3</text>
+        </g>
+        <g transform="translate(330,0)">
+          <rect x="0" y="0" width="92" height="74" rx="6" fill="#fff" stroke="#9aa4b5" stroke-width="1.4"/>
+          <path d="M40 52 h34 l-4 -12 h-20 z M40 52 v-6 h40 v6" fill="none" stroke="#1d2433" stroke-width="2"/>
+          <circle cx="48" cy="54" r="5" fill="#fff" stroke="#1d2433" stroke-width="2"/><circle cx="72" cy="54" r="5" fill="#fff" stroke="#1d2433" stroke-width="2"/>
+          <text x="46" y="70" font-size="9" fill="#5b6577" text-anchor="middle">4</text>
+        </g>
+      </g>
+      <!-- arrow -->
+      <g transform="translate(450,57)">
+        <path d="M0 0 H60" stroke="#1f6feb" stroke-width="3" fill="none"/>
+        <path d="M60 0 l-10 -7 v14 z" fill="#1f6feb"/>
+        <text x="30" y="-12" font-size="11" fill="#1f6feb" text-anchor="middle" font-weight="700">fast!</text>
+      </g>
+      <!-- blended result -->
+      <g transform="translate(530,10)">
+        <rect x="0" y="0" width="140" height="94" rx="8" fill="#e8f0fe" stroke="#1f6feb" stroke-width="1.6"/>
+        <path d="M38 64 h50 l-6 -18 h-30 z M38 64 v-9 h58 v9" fill="none" stroke="#1d2433" stroke-width="2.4"/>
+        <circle cx="50" cy="67" r="7" fill="#fff" stroke="#1d2433" stroke-width="2.4"/><circle cx="84" cy="67" r="7" fill="#fff" stroke="#1d2433" stroke-width="2.4"/>
+        <path d="M12 50 h18 M8 58 h20 M14 66 h14" stroke="#1f6feb" stroke-width="2" stroke-linecap="round"/>
+        <text x="70" y="86" font-size="9.5" fill="#1f6feb" text-anchor="middle" font-weight="600">one moving car</text>
+      </g>
+      <text x="215" y="125" font-size="11" fill="#5b6577" text-anchor="middle">Separate drawings, each one a little different…</text>
+      <text x="600" y="125" font-size="11" fill="#5b6577" text-anchor="middle">…your brain sees motion</text>
+      <!-- question band -->
+      <g transform="translate(0,150)">
+        <rect x="0" y="0" width="680" height="76" rx="8" fill="#fff4e5"/>
+        <text x="20" y="24" font-size="11" font-weight="700" fill="#b35c00" letter-spacing="1.2">THE BIG QUESTION</text>
+        <text x="20" y="46" font-size="15" fill="#1d2433" font-weight="600">What is the fewest frames per second (FPS) before drawings stop</text>
+        <text x="20" y="66" font-size="15" fill="#1d2433" font-weight="600">looking like separate pictures and start looking like a movie?</text>
+      </g>
+    </svg>
+  </figure>
+
+  <div class="cols" style="margin-top:0.15in">
+    <div class="box">
+      <div class="label">Scientist</div>
+      <p style="margin:0.08in 0 0.02in">Name: <span class="fill" style="min-width:2.2in"></span></p>
+      <p style="margin:0.12in 0 0.02in">Grade: <span class="fill" style="min-width:2.2in"></span></p>
+      <p style="margin:0.12in 0 0.02in">School: <span class="fill" style="min-width:2.1in"></span></p>
+      <p style="margin:0.12in 0 0">Fair date: <span class="fill" style="min-width:1.9in"></span></p>
+    </div>
+    <div>
+      <div class="label">What's inside</div>
+      <ul class="toc" style="list-style:none; padding-left:0">
+        <li><strong>p. 2</strong> &nbsp;How eyes and brain see motion</li>
+        <li><strong>p. 3</strong> &nbsp;Question, hypothesis, variables</li>
+        <li><strong>p. 4</strong> &nbsp;Materials list</li>
+        <li><strong>p. 5</strong> &nbsp;Build a zoetrope</li>
+        <li><strong>p. 6</strong> &nbsp;Make a digital flipbook</li>
+        <li><strong>p. 7</strong> &nbsp;Draw the car chase</li>
+        <li><strong>p. 8</strong> &nbsp;Run the experiment</li>
+        <li><strong>p. 9</strong> &nbsp;Data sheet</li>
+        <li><strong>p. 10</strong> &nbsp;Graphs and analysis</li>
+        <li><strong>p. 11</strong> &nbsp;Conclusion and extensions</li>
+        <li><strong>p. 12</strong> &nbsp;Display board plan</li>
+        <li><strong>p. 13</strong> &nbsp;Notes for parents</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="page-footer"><span>Frame Rate &amp; Persistence of Vision</span><span>1</span></div>
+</section>
+
+<!-- =============================== PAGE 2: SCIENCE =============================== -->
+<section class="page">
+  <h2><span class="step">Background research</span><br>How do your eyes and brain see motion?</h2>
+
+  <p>A movie is just a lot of <strong>still pictures</strong> shown very quickly, one after another. Each still picture is called a <strong>frame</strong>. How many frames are shown each second is the <strong>frame rate</strong>, measured in <strong>frames per second (FPS)</strong>. Somewhere along the way your brain stops seeing a slideshow and starts seeing motion. That's the moment this project is trying to find.</p>
+
+  <h3>The trip from picture to brain</h3>
+  <figure>
+    <svg viewBox="0 0 680 170" width="78%" style="display:block;margin:0 auto" role="img" aria-label="Light travels through the cornea and lens to the retina, then along the optic nerve to the visual cortex">
+      <!-- picture -->
+      <rect x="10" y="50" width="70" height="56" rx="4" fill="#fff" stroke="#9aa4b5" stroke-width="1.5"/>
+      <path d="M22 88 h26 l-3 -9 h-16 z M22 88 v-5 h32 v5" fill="none" stroke="#1d2433" stroke-width="1.8"/>
+      <circle cx="29" cy="90" r="4" fill="#fff" stroke="#1d2433" stroke-width="1.8"/><circle cx="48" cy="90" r="4" fill="#fff" stroke="#1d2433" stroke-width="1.8"/>
+      <text x="45" y="124" font-size="10" fill="#5b6577" text-anchor="middle">frame</text>
+      <!-- light rays -->
+      <path d="M80 66 L190 72 M80 90 L190 84" stroke="#f0b429" stroke-width="2" stroke-dasharray="5 4"/>
+      <!-- eye -->
+      <ellipse cx="250" cy="78" rx="62" ry="54" fill="#fff" stroke="#1d2433" stroke-width="2"/>
+      <path d="M190 60 Q178 78 190 96" fill="none" stroke="#1f6feb" stroke-width="3"/>
+      <ellipse cx="208" cy="78" rx="8" ry="18" fill="#e8f0fe" stroke="#1f6feb" stroke-width="2"/>
+      <path d="M296 40 Q322 78 296 116" fill="none" stroke="#b35c00" stroke-width="5"/>
+      <path d="M216 74 L300 66 M216 82 L300 90" stroke="#f0b429" stroke-width="1.6" stroke-dasharray="4 3"/>
+      <text x="186" y="30" font-size="10" fill="#1f6feb" text-anchor="middle">cornea</text>
+      <text x="208" y="150" font-size="10" fill="#1f6feb" text-anchor="middle">lens</text>
+      <text x="300" y="30" font-size="10" fill="#b35c00" text-anchor="middle">retina</text>
+      <!-- optic nerve -->
+      <path d="M311 78 C360 78 380 60 430 60" fill="none" stroke="#1d2433" stroke-width="4"/>
+      <text x="370" y="96" font-size="10" fill="#5b6577" text-anchor="middle">optic nerve</text>
+      <!-- brain -->
+      <path d="M440 70 C430 20 520 0 570 28 C620 20 660 60 640 96 C650 130 590 150 560 136 C530 156 470 146 462 120 C430 116 428 86 440 70 z" fill="#e8f0fe" stroke="#1d2433" stroke-width="2"/>
+      <circle cx="610" cy="96" r="14" fill="#fff4e5" stroke="#b35c00" stroke-width="2"/>
+      <text x="610" y="100" font-size="9" fill="#b35c00" text-anchor="middle" font-weight="700">V1</text>
+      <circle cx="560" cy="66" r="14" fill="#fff4e5" stroke="#b35c00" stroke-width="2"/>
+      <text x="560" y="70" font-size="9" fill="#b35c00" text-anchor="middle" font-weight="700">MT</text>
+      <text x="540" y="164" font-size="10" fill="#5b6577" text-anchor="middle">brain: V1 sees shapes, MT detects motion</text>
+    </svg>
+  </figure>
+  <ol>
+    <li><strong>Cornea and lens</strong> bend light to focus the picture.</li>
+    <li>The <strong>retina</strong> at the back of the eye has about 120 million <strong>rods</strong> (for dim light and movement) and 6 million <strong>cones</strong> (for color and detail). They turn light into electrical signals.</li>
+    <li>The <strong>optic nerve</strong> carries those signals to the back of the brain. Area <strong>V1</strong> sees shapes and edges, and an area called <strong>MT</strong> works out what is moving and which way.</li>
+  </ol>
+
+  <div class="cols">
+    <div class="box">
+      <h3>Persistence of vision</h3>
+      <p>After a picture disappears, your eye and brain keep a fading trace of it for a split second, roughly 1/15 to 1/10 of a second. If the next picture shows up before the trace fades, you don't notice the gap. Try it: stare at a bright window, then close your eyes and you'll see an afterimage.</p>
+    </div>
+    <div class="box">
+      <h3>The phi phenomenon</h3>
+      <p>When two pictures flash one after the other in slightly different places, your brain <em>fills in</em> the movement between them, even though nothing actually moved. Scientists call this <strong>apparent motion</strong>. It's the same reason a row of blinking lights looks like it's "running."</p>
+    </div>
+  </div>
+
+  <div class="callout">
+    <div class="label">Scientist's note</div>
+    <p>For about 100 years, people said "persistence of vision" was the whole reason movies work. Today scientists think the brain's <strong>motion detectors</strong> (the phi phenomenon) do most of the work. Persistence of vision mostly explains why you don't see the dark gaps <em>between</em> frames. Explaining the difference will impress the judges.</p>
+  </div>
+
+  <h3>Frame rates in real life</h3>
+  <table>
+    <tr><th>Where you see it</th><th>Typical FPS</th></tr>
+    <tr><td>Old hand-cranked flipbooks and early silent films</td><td>about 12–18</td></tr>
+    <tr><td>Hand-drawn cartoons (often drawn "on twos," so each drawing is shown twice)</td><td>12 drawings per second</td></tr>
+    <tr><td>Movies in theaters</td><td>24</td></tr>
+    <tr><td>TV and phone videos</td><td>30 or 60</td></tr>
+    <tr><td>Fast video games</td><td>60–144+</td></tr>
+  </table>
+
+  <div class="page-footer"><span>Frame Rate &amp; Persistence of Vision</span><span>2</span></div>
+</section>
+
+<!-- =============================== PAGE 3: QUESTION / HYPOTHESIS / VARIABLES =============================== -->
+<section class="page">
+  <h2><span class="step">Plan the experiment</span><br>Question, hypothesis and variables</h2>
+
+  <div class="callout warm">
+    <div class="label">Testable question</div>
+    <p style="font-size:13pt">At what frame rate (FPS) do most people stop seeing separate drawings and start seeing smooth motion?</p>
+  </div>
+
+  <h3>My hypothesis</h3>
+  <p class="muted small">Use the form "If… then… because…". Write your own guess <em>before</em> testing anyone. A wrong guess is still good science!</p>
+  <p class="muted small">Example: <span class="hand">"If I show my car chase at different speeds, then most people will see smooth motion at about 12 FPS, because cartoons are often drawn at 12 drawings per second."</span></p>
+  <div class="write-line"></div><div class="write-line"></div><div class="write-line"></div>
+
+  <h3>Variables</h3>
+  <p>A fair test changes only <strong>one</strong> thing at a time.</p>
+  <table>
+    <tr><th style="width:26%">Type</th><th style="width:34%">What it means</th><th>In this project</th></tr>
+    <tr>
+      <td><strong>Independent variable</strong><br><span class="muted small">(what I change)</span></td>
+      <td>The one thing you change on purpose</td>
+      <td>Frame rate: 2, 4, 6, 8, 10, 12, 15, 20, 24, 30 FPS</td>
+    </tr>
+    <tr>
+      <td><strong>Dependent variables</strong><br><span class="muted small">(what I measure)</span></td>
+      <td>What you watch or measure to see the effect</td>
+      <td>1. Each volunteer's answer: <em>"pictures"</em> or <em>"movie"</em><br>2. Smoothness rating from 1 (choppy) to 5 (smooth)</td>
+    </tr>
+    <tr>
+      <td><strong>Controlled variables</strong><br><span class="muted small">(kept the same)</span></td>
+      <td>Everything else, kept the same so the test is fair</td>
+      <td>The same drawings, number of frames, screen or zoetrope, viewing distance (about 2 feet), room lighting, watching time (5 seconds per speed), and instructions read from a script</td>
+    </tr>
+  </table>
+
+  <h3>Rating scale (read this to every volunteer)</h3>
+  <table>
+    <tr><th style="width:12%">Score</th><th>What it looks like</th></tr>
+    <tr><td><strong>1</strong></td><td>A slideshow. I can clearly see each separate drawing.</td></tr>
+    <tr><td><strong>2</strong></td><td>Jumpy. I can tell something is moving, but it jerks.</td></tr>
+    <tr><td><strong>3</strong></td><td>In-between. Mostly moving, but still a bit choppy.</td></tr>
+    <tr><td><strong>4</strong></td><td>Almost smooth, with a small flicker or stutter.</td></tr>
+    <tr><td><strong>5</strong></td><td>Totally smooth, like a real cartoon.</td></tr>
+  </table>
+
+  <div class="callout">
+    <div class="label">Key definition: the "movie threshold"</div>
+    <p>For each volunteer, the <strong>movie threshold</strong> is the <em>lowest</em> FPS where they answered "movie" <em>and</em> rated it 4 or 5. This is the number you'll average at the end.</p>
+  </div>
+
+  <div class="page-footer"><span>Frame Rate &amp; Persistence of Vision</span><span>3</span></div>
+</section>
+
+<!-- =============================== PAGE 4: MATERIALS =============================== -->
+<section class="page">
+  <h2><span class="step">Get ready</span><br>Materials list</h2>
+
+  <p>There are two ways to show the animation. <strong>Use both if you can.</strong> The <strong>digital flipbook</strong> gives exact, fair FPS numbers for the experiment. The <strong>zoetrope</strong> is the eye-catching machine for the display table, and it shows how people watched "movies" in the 1800s.</p>
+
+  <div class="cols">
+    <div class="box">
+      <h3>For the drawings (everyone)</h3>
+      <ul>
+        <li>Plain white paper or index cards</li>
+        <li>Pencil, eraser and a black fine-tip marker</li>
+        <li>Ruler</li>
+        <li>Light source for tracing (a window or tablet screen)</li>
+        <li>Colored pencils (optional)</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h3>Option A: Digital flipbook</h3>
+      <ul>
+        <li>Phone or tablet to photograph the drawings</li>
+        <li>A computer, tablet or phone to play them back</li>
+        <li>An app that lets you set the FPS exactly, such as <strong>Stop Motion Studio</strong> (free) or <strong>Scratch</strong> (free, scratch.mit.edu)</li>
+        <li>Or the <strong>built-in FPS tester</strong> in the online version of this guide</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="box" style="margin-top:0.2in">
+    <h3>Option B: Zoetrope</h3>
+    <div class="cols">
+      <ul>
+        <li>Black card stock (2–3 sheets) or a sturdy cardboard cake round</li>
+        <li>A round base about 8–10 inches across (a cake pan, a pizza box circle or a paper plate stack)</li>
+        <li>Scissors or a craft knife <span class="muted">(adult use only)</span></li>
+        <li>Tape, glue stick and a ruler</li>
+        <li>A small piece of bright tape to mark one spot</li>
+      </ul>
+      <div>
+        <p style="margin-bottom:0.05in"><strong>Something to spin it (pick one):</strong></p>
+        <ul>
+          <li><strong>Record turntable</strong>: the easiest choice, with steady speeds of 33⅓, 45 and sometimes 78 RPM</li>
+          <li><strong>Lego motor</strong> (Technic, Powered Up or Spike) with gears to slow it down</li>
+          <li><strong>Lazy Susan</strong> spun by hand (fun, but the speed isn't steady)</li>
+          <li><strong>Bike wheel</strong> with the bike flipped upside down (adult supervision only, keep fingers away from the spokes)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <h3>For collecting data</h3>
+  <ul>
+    <li>A stopwatch or phone timer</li>
+    <li>Printed data sheets (page 9) and a clipboard</li>
+    <li>At least <strong>10 volunteers</strong>. More is better: 15–20 makes the results more trustworthy. Try for a mix of ages: kids, teens, parents and grandparents.</li>
+    <li>Index cards with the rating scale printed on them, so volunteers can point to a number</li>
+  </ul>
+
+  <div class="callout warm">
+    <div class="label">Safety</div>
+    <ul>
+      <li>An adult does all craft-knife cutting.</li>
+      <li>Never touch a spinning wheel or turntable. Stop it first.</li>
+      <li>Ask volunteers if flashing or flickering images bother them. Anyone with a history of seizures or migraines should skip the test.</li>
+    </ul>
+  </div>
+
+  <div class="page-footer"><span>Frame Rate &amp; Persistence of Vision</span><span>4</span></div>
+</section>
+
+<!-- =============================== PAGE 5: ZOETROPE =============================== -->
+<section class="page">
+  <h2><span class="step">Engineering build</span><br>Build a zoetrope</h2>
+
+  <p>A <strong>zoetrope</strong> ("wheel of life") is a spinning drum with slits. You look <em>through</em> the slits at drawings on the inside wall. Each slit works like a camera shutter: you see one drawing for a split second, then darkness, then the next drawing. That flash-and-gap pattern is why the pictures don't blur together.</p>
+
+  <div class="cols">
+    <figure>
+      <svg viewBox="0 0 320 240" width="100%" role="img" aria-label="Zoetrope drum with slits on top and drawings on the lower inside wall">
+        <ellipse cx="160" cy="190" rx="130" ry="34" fill="#f4f6fa" stroke="#1d2433" stroke-width="2"/>
+        <path d="M30 70 V190 M290 70 V190" stroke="#1d2433" stroke-width="2"/>
+        <ellipse cx="160" cy="70" rx="130" ry="34" fill="#fff" stroke="#1d2433" stroke-width="2"/>
+        <!-- slits on front wall -->
+        <g fill="#fff" stroke="#1d2433" stroke-width="1.5">
+          <rect x="52" y="96" width="6" height="40"/>
+          <rect x="92" y="101" width="6" height="40"/>
+          <rect x="132" y="104" width="6" height="40"/>
+          <rect x="172" y="104" width="6" height="40"/>
+          <rect x="212" y="101" width="6" height="40"/>
+          <rect x="252" y="96" width="6" height="40"/>
+        </g>
+        <!-- picture strip band -->
+        <path d="M30 150 Q160 196 290 150" fill="none" stroke="#1f6feb" stroke-width="2" stroke-dasharray="6 4"/>
+        <path d="M30 186 Q160 232 290 186" fill="none" stroke="#1f6feb" stroke-width="2" stroke-dasharray="6 4"/>
+        <text x="160" y="238" font-size="11" fill="#1f6feb" text-anchor="middle">picture strip on the inside wall (between dashed lines)</text>
+        <text x="160" y="88" font-size="11" fill="#1d2433" text-anchor="middle">slits (1 per drawing)</text>
+        <!-- eye -->
+        <g transform="translate(6,108)">
+          <path d="M0 10 Q12 0 24 10 Q12 20 0 10 z" fill="#fff" stroke="#1d2433" stroke-width="1.6"/>
+          <circle cx="12" cy="10" r="3.5" fill="#1d2433"/>
+        </g>
+        <!-- spin arrow -->
+        <path d="M120 22 Q160 8 200 22" fill="none" stroke="#b35c00" stroke-width="2"/>
+        <path d="M200 22 l-10 -2 l5 9 z" fill="#b35c00"/>
+        <text x="212" y="20" font-size="10" fill="#b35c00">spin</text>
+      </svg>
+      <figcaption>Look through a slit (at eye level) at the drawing on the far side.</figcaption>
+    </figure>
+    <div>
+      <h3>Build steps</h3>
+      <ol>
+        <li><strong>Pick the number of frames.</strong> Use <strong>12</strong>. It divides evenly and is enough for a smooth loop.</li>
+        <li><strong>Measure the drum.</strong> Circumference = 3.14 × diameter. For an 8-inch base, that's about 25 inches. Each drawing slot is then 25 ÷ 12 ≈ 2.1 inches wide.</li>
+        <li><strong>Make the wall.</strong> Tape black card strips together into a band about 4 inches tall and as long as the circumference, plus 0.5 inch for overlap.</li>
+        <li><strong>Cut 12 slits</strong> along the top inch of the band, evenly spaced (2.1 inches apart). Each slit is about ⅛ inch wide and 1 inch tall. <em>Narrower slits give a sharper image but a darker one.</em></li>
+        <li>Glue the band around the base, with the slits at the top.</li>
+        <li>Put the <strong>picture strip</strong> (page 7) inside, along the bottom of the wall, with each drawing lined up <em>between</em> two slits.</li>
+        <li>Stick a piece of bright tape on the outside of the drum. You'll use it to count spins.</li>
+      </ol>
+    </div>
+  </div>
+
+  <h3>Zoetrope math: turning spins into FPS</h3>
+  <div class="callout">
+    <p style="font-size:13pt; margin:0"><strong>FPS = drawings on the strip × spins per second</strong></p>
+    <p class="small" style="margin:0.05in 0 0">To find spins per second: count how many times the tape mark passes you in <strong>10 seconds</strong>, then divide by 10. Do it 3 times and take the average.</p>
+  </div>
+  <table>
+    <tr><th>Spinner</th><th>Spins per minute (RPM)</th><th>Spins per second</th><th>FPS with 12 drawings</th><th>FPS with 6 drawings</th></tr>
+    <tr><td>Turntable at 33⅓</td><td>33.3</td><td>0.56</td><td><strong>6.7</strong></td><td>3.3</td></tr>
+    <tr><td>Turntable at 45</td><td>45</td><td>0.75</td><td><strong>9</strong></td><td>4.5</td></tr>
+    <tr><td>Turntable at 78</td><td>78</td><td>1.3</td><td><strong>15.6</strong></td><td>7.8</td></tr>
+    <tr><td>Lego motor (example)</td><td>120</td><td>2</td><td><strong>24</strong></td><td>12</td></tr>
+  </table>
+  <p class="small muted" style="margin-top:0.06in">Tip: you can get more speeds from one turntable by using <strong>two strips</strong>, one with 12 drawings and one with 6 (use every other drawing, and cut a band with 6 slits). With a Lego motor, change gears or battery power and measure the spin speed each time.</p>
+
+  <div class="page-footer"><span>Frame Rate &amp; Persistence of Vision</span><span>5</span></div>
+</section>
+
+<!-- =============================== PAGE 6: DIGITAL FLIPBOOK =============================== -->
+<section class="page">
+  <h2><span class="step">Engineering build</span><br>Make a digital flipbook</h2>
+
+  <p>The digital version is the <strong>main measuring tool</strong> for the experiment, because a computer can show each drawing for an exact amount of time. The zoetrope's speed wobbles a little.</p>
+
+  <h3>Step 1: Photograph the drawings</h3>
+  <ul>
+    <li>Tape the phone to a stack of books, pointing straight down, so every photo is taken from the same spot.</li>
+    <li>Tape a paper "corner guide" on the table so each drawing sits in exactly the same place.</li>
+    <li>Use the same lighting for every photo, with no shadows from your hand.</li>
+    <li>Name the photos in order: <code>frame01, frame02, … frame12</code>.</li>
+  </ul>
+
+  <h3>Step 2: Play them back at an exact FPS (pick one tool)</h3>
+  <div class="cols-3">
+    <div class="box">
+      <h3>Stop Motion Studio</h3>
+      <p class="small">A free app for phone or tablet. Import the photos, then open the movie settings and set the frame rate. Export one video per speed, for example <code>car_4fps.mp4</code>.</p>
+    </div>
+    <div class="box">
+      <h3>Scratch (coding!)</h3>
+      <p class="small">Upload each drawing as a <em>costume</em> on one sprite. Then build:</p>
+      <p class="small hand" style="margin:0">when green flag clicked<br>forever<br>&nbsp;&nbsp;next costume<br>&nbsp;&nbsp;wait (1 / FPS) seconds</p>
+      <p class="small" style="margin-top:0.05in">Make FPS a variable with a slider.</p>
+    </div>
+    <div class="box">
+      <h3>FPS tester (online guide)</h3>
+      <p class="small">The web version of this guide has a tester. Upload the photos, click a speed, or use <strong>Mystery mode</strong>, which hides the speed from volunteers.</p>
+      <p class="small muted" style="margin:0; word-break:break-all">darshangr.github.io/AI-understanding/science-fair/frame-rate-project.html</p>
+    </div>
+  </div>
+
+  <h3>Step 3: Choose your test speeds</h3>
+  <p>Most screens refresh <strong>60 times per second</strong>. Frame rates that divide evenly into 60 give each drawing the same amount of screen time. Those are the fairest speeds to test:</p>
+  <table>
+    <tr><th>FPS</th><th>2</th><th>4</th><th>6</th><th>10</th><th>12</th><th>15</th><th>20</th><th>30</th></tr>
+    <tr><td>Each drawing is shown for</td><td>0.50 s</td><td>0.25 s</td><td>0.17 s</td><td>0.10 s</td><td>0.083 s</td><td>0.067 s</td><td>0.05 s</td><td>0.033 s</td></tr>
+    <tr><td>Screen refreshes per drawing</td><td>30</td><td>15</td><td>10</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td></tr>
+  </table>
+  <p class="small muted" style="margin-top:0.06in">8 and 24 FPS don't divide evenly into 60, so some drawings stay on screen a little longer than others. That causes a tiny stutter, called <em>judder</em>. You can still test them. Movies at 24 FPS have the same problem on TVs, and the fix is called "3:2 pulldown." That makes a great fun fact for the board.</p>
+
+  <div class="callout">
+    <div class="label">Make it a fair test: don't go slow-to-fast every time</div>
+    <p>If speeds always go from slow to fast, volunteers can guess the pattern and say "smooth" too early. Use one of these:</p>
+    <ul>
+      <li><strong>Mystery order:</strong> shuffle the speeds for each volunteer. You can write each speed on a card and draw cards from a hat.</li>
+      <li><strong>Up and down:</strong> go slow to fast once, then fast to slow once, and average the two thresholds.</li>
+    </ul>
+  </div>
+
+  <div class="page-footer"><span>Frame Rate &amp; Persistence of Vision</span><span>6</span></div>
+</section>
+
+<!-- =============================== PAGE 7: DRAWINGS =============================== -->
+<section class="page">
+  <h2><span class="step">The art part</span><br>Draw the car chase</h2>
+
+  <p>The movie is a <strong>12-frame loop</strong>: after frame 12 it goes straight back to frame 1 and keeps repeating. A loop is perfect for both the zoetrope and the flipbook.</p>
+
+  <h3>Story idea: "The Getaway"</h3>
+  <p>A red race car speeds along a road, with a police car close behind. The road lines and a tree slide backward to show speed. The wheels spin, and the race car bounces a little over bumps.</p>
+
+  <table>
+    <tr><th style="width:10%">Frame</th><th>Race car</th><th>Police car</th><th>Background</th></tr>
+    <tr><td>1</td><td>Middle of the frame, wheels with spoke pointing up</td><td>Just entering at the left</td><td>Road dashes at start position, tree at the right edge</td></tr>
+    <tr><td>2–3</td><td>Same spot, spokes turn ⅛ of a turn each frame</td><td>Creeps forward a little</td><td>Dashes and tree slide left a little each frame</td></tr>
+    <tr><td>4–6</td><td>Hits a bump: body rises in 4, at the top in 5, lands in 6</td><td>Lights flash: on in odd frames, off in even frames</td><td>Keep sliding left</td></tr>
+    <tr><td>7–9</td><td>Pulls slightly ahead</td><td>Falls back a little</td><td>Tree reaches the left edge</td></tr>
+    <tr><td>10–12</td><td>Back to the middle, ready to loop to frame 1</td><td>Back to the frame 1 spot</td><td>Dashes back to the start, ready to loop</td></tr>
+  </table>
+
+  <div class="cols" style="margin-top:0.12in">
+    <div class="callout">
+      <div class="label">Animator tricks</div>
+      <ul class="small">
+        <li><strong>Trace</strong> the last drawing on a window or bright screen, then change just a little.</li>
+        <li><strong>Small steps</strong>: move things only about ¼ car-length per frame. Big jumps look choppy even at high FPS. That's an extension experiment on page 11!</li>
+        <li>Draw the road line in exactly the same place on every frame so it doesn't wobble.</li>
+        <li>Use <strong>thick, dark outlines</strong>. They show up best through zoetrope slits.</li>
+      </ul>
+    </div>
+    <div class="callout warm">
+      <div class="label">Check your loop</div>
+      <p class="small">Stack the 12 drawings and flip through them with your thumb like a flipbook. If something jumps between frame 12 and frame 1, redraw frame 12 so it leads smoothly back into frame 1.</p>
+    </div>
+  </div>
+
+  <h3>Zoetrope picture strip template <span class="muted small">(12 boxes; cut out, tape the two halves end to end, and fit inside the drum)</span></h3>
+  <svg viewBox="0 0 680 150" width="100%" role="img" aria-label="Two rows of six numbered drawing boxes">
+    <g font-size="9" fill="#5b6577">
+      <g stroke="#1d2433" stroke-width="1.2" fill="#fff">
+        <rect x="2" y="4" width="110" height="62"/><rect x="115" y="4" width="110" height="62"/><rect x="228" y="4" width="110" height="62"/>
+        <rect x="341" y="4" width="110" height="62"/><rect x="454" y="4" width="110" height="62"/><rect x="567" y="4" width="110" height="62"/>
+        <rect x="2" y="82" width="110" height="62"/><rect x="115" y="82" width="110" height="62"/><rect x="228" y="82" width="110" height="62"/>
+        <rect x="341" y="82" width="110" height="62"/><rect x="454" y="82" width="110" height="62"/><rect x="567" y="82" width="110" height="62"/>
+      </g>
+      <g stroke="#c5ccd8" stroke-dasharray="4 4">
+        <line x1="6" y1="52" x2="108" y2="52"/><line x1="119" y1="52" x2="221" y2="52"/><line x1="232" y1="52" x2="334" y2="52"/>
+        <line x1="345" y1="52" x2="447" y2="52"/><line x1="458" y1="52" x2="560" y2="52"/><line x1="571" y1="52" x2="673" y2="52"/>
+        <line x1="6" y1="130" x2="108" y2="130"/><line x1="119" y1="130" x2="221" y2="130"/><line x1="232" y1="130" x2="334" y2="130"/>
+        <line x1="345" y1="130" x2="447" y2="130"/><line x1="458" y1="130" x2="560" y2="130"/><line x1="571" y1="130" x2="673" y2="130"/>
+      </g>
+      <text x="8" y="16">1</text><text x="121" y="16">2</text><text x="234" y="16">3</text><text x="347" y="16">4</text><text x="460" y="16">5</text><text x="573" y="16">6</text>
+      <text x="8" y="94">7</text><text x="121" y="94">8</text><text x="234" y="94">9</text><text x="347" y="94">10</text><text x="460" y="94">11</text><text x="573" y="94">12</text>
+    </g>
+  </svg>
+  <p class="small muted">The dashed line is the road, so keep it in the same place in every box. For an 8-inch drum, print this page at 100% and each box will be about 2 inches wide, which fits well.</p>
+
+  <div class="page-footer"><span>Frame Rate &amp; Persistence of Vision</span><span>7</span></div>
+</section>
+
+<!-- =============================== PAGE 8: PROCEDURE =============================== -->
+<section class="page">
+  <h2><span class="step">Run it</span><br>Experiment procedure</h2>
+
+  <h3>Set up (same for every volunteer)</h3>
+  <ol>
+    <li>Use the same room, with the lights at the same brightness each time.</li>
+    <li>Seat the volunteer about <strong>2 feet</strong> from the screen. Put a tape mark on the floor for the chair.</li>
+    <li>If they wear glasses for distance or reading screens, have them wear them, and write it on the data sheet.</li>
+    <li>Prepare a <strong>shuffled list of speeds</strong> for this volunteer: 2, 4, 6, 8, 10, 12, 15, 20, 24, 30 FPS.</li>
+  </ol>
+
+  <h3>The script (read the same words every time)</h3>
+  <div class="callout">
+    <p class="hand" style="margin:0">"I'm going to show you a short cartoon at different speeds. Each one plays for 5 seconds. After each one, tell me: did it look like <strong>separate pictures</strong> or like a <strong>movie</strong>? Then give it a smoothness score from 1 to 5 using this card. There are no right or wrong answers."</p>
+  </div>
+
+  <h3>For each speed</h3>
+  <ol>
+    <li>Play the animation for <strong>5 seconds</strong>. Use a timer.</li>
+    <li>Ask: <em>"Pictures or movie?"</em> Write <strong>P</strong> or <strong>M</strong>.</li>
+    <li>Ask: <em>"Smoothness score, 1 to 5?"</em> Write the number.</li>
+    <li>Give them a 3-second break by looking away, then do the next speed.</li>
+  </ol>
+
+  <h3>After all speeds</h3>
+  <ol>
+    <li>Find this volunteer's <strong>movie threshold</strong>: the lowest FPS where they said <strong>M</strong> and gave a score of 4 or 5.</li>
+    <li>Optional zoetrope round: let them watch the zoetrope at 2 or 3 turntable speeds and score it the same way. Does the zoetrope look smoother than the screen at the same FPS? (The dark gap from each slit can help!)</li>
+    <li>Thank them!</li>
+  </ol>
+
+  <div class="cols">
+    <div class="box">
+      <h3>Write down for each volunteer</h3>
+      <ul class="small">
+        <li>A code like V1, V2 or V3 instead of their real name</li>
+        <li>Age group: under 10, 10–17, 18–49, 50+</li>
+        <li>Glasses or contacts: yes or no</li>
+        <li>Plays video games often: yes or no <span class="muted">(fun extra!)</span></li>
+      </ul>
+    </div>
+    <div class="callout warm" style="margin:0">
+      <div class="label">Good-scientist habits</div>
+      <ul class="small">
+        <li>Don't hint, smile or say "good" when they answer.</li>
+        <li>Don't let volunteers watch each other's turns.</li>
+        <li>Test yourself last, because you know the animation too well. Mark your result as "the scientist."</li>
+        <li>Write down anything surprising in a notes column.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="page-footer"><span>Frame Rate &amp; Persistence of Vision</span><span>8</span></div>
+</section>
+
+<!-- =============================== PAGE 9: DATA SHEET =============================== -->
+<section class="page">
+  <h2><span class="step">Collect data</span><br>Data sheet</h2>
+  <p class="small">In each box, write <strong>P</strong> or <strong>M</strong> plus a score from 1 to 5 (example: <span class="hand">M4</span>). Print more copies as needed.</p>
+
+  <table class="data" style="table-layout:fixed">
+    <colgroup>
+      <col style="width:0.42in"><col style="width:0.55in"><col style="width:0.55in">
+      <col span="10"><col style="width:0.75in">
+    </colgroup>
+    <tr>
+      <th>Vol.</th><th>Age group</th><th>Glasses?</th>
+      <th>2</th><th>4</th><th>6</th><th>8</th><th>10</th><th>12</th><th>15</th><th>20</th><th>24</th><th>30</th>
+      <th style="font-size:8pt">Movie threshold (FPS)</th>
+    </tr>
+    <tr><td>V1</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>V2</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>V3</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>V4</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>V5</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>V6</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>V7</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>V8</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>V9</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>V10</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>V11</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>V12</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>V13</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>V14</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>V15</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr style="background:#f4f6fa"><td colspan="3"><strong>Average score</strong></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr style="background:#f4f6fa"><td colspan="3"><strong># who said "M"</strong></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+  </table>
+  <p class="small muted" style="margin-top:0.06in">Column headings 2–30 are the frame rates in FPS.</p>
+
+  <h3>Zoetrope round (optional)</h3>
+  <table class="data">
+    <tr><th>Spinner setting</th><th>Spins in 10 s (avg of 3)</th><th>Spins per second</th><th>Drawings</th><th>FPS</th><th>Average score</th></tr>
+    <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+  </table>
+
+  <h3>Notes and surprises</h3>
+  <div class="write-line"></div><div class="write-line"></div>
+
+  <div class="page-footer"><span>Frame Rate &amp; Persistence of Vision</span><span>9</span></div>
+</section>
+
+<!-- =============================== PAGE 10: ANALYSIS =============================== -->
+<section class="page">
+  <h2><span class="step">Make sense of it</span><br>Graphs and analysis</h2>
+
+  <h3>Graph 1: Average smoothness score at each frame rate (line graph)</h3>
+  <svg viewBox="0 0 680 260" width="100%" role="img" aria-label="Blank grid for graphing average smoothness score against frame rate">
+    <g stroke="#e3e7ee" stroke-width="1">
+      <line x1="70" y1="30" x2="660" y2="30"/><line x1="70" y1="70" x2="660" y2="70"/><line x1="70" y1="110" x2="660" y2="110"/>
+      <line x1="70" y1="150" x2="660" y2="150"/><line x1="70" y1="190" x2="660" y2="190"/>
+      <line x1="129" y1="20" x2="129" y2="210"/><line x1="188" y1="20" x2="188" y2="210"/><line x1="247" y1="20" x2="247" y2="210"/>
+      <line x1="306" y1="20" x2="306" y2="210"/><line x1="365" y1="20" x2="365" y2="210"/><line x1="424" y1="20" x2="424" y2="210"/>
+      <line x1="483" y1="20" x2="483" y2="210"/><line x1="542" y1="20" x2="542" y2="210"/><line x1="601" y1="20" x2="601" y2="210"/>
+      <line x1="660" y1="20" x2="660" y2="210"/>
+    </g>
+    <line x1="70" y1="20" x2="70" y2="210" stroke="#1d2433" stroke-width="1.6"/>
+    <line x1="70" y1="210" x2="665" y2="210" stroke="#1d2433" stroke-width="1.6"/>
+    <g font-size="11" fill="#1d2433" text-anchor="end">
+      <text x="62" y="34">5</text><text x="62" y="74">4</text><text x="62" y="114">3</text><text x="62" y="154">2</text><text x="62" y="194">1</text>
+    </g>
+    <g font-size="11" fill="#1d2433" text-anchor="middle">
+      <text x="129" y="226">2</text><text x="188" y="226">4</text><text x="247" y="226">6</text><text x="306" y="226">8</text><text x="365" y="226">10</text>
+      <text x="424" y="226">12</text><text x="483" y="226">15</text><text x="542" y="226">20</text><text x="601" y="226">24</text><text x="660" y="226">30</text>
+    </g>
+    <text x="365" y="250" font-size="12" fill="#5b6577" text-anchor="middle">Frame rate (frames per second)</text>
+    <text x="18" y="115" font-size="12" fill="#5b6577" text-anchor="middle" transform="rotate(-90 18 115)">Average smoothness (1–5)</text>
+    <line x1="70" y1="70" x2="660" y2="70" stroke="#b35c00" stroke-width="1.4" stroke-dasharray="6 5"/>
+    <text x="655" y="64" font-size="10" fill="#b35c00" text-anchor="end">"smooth" line (score 4)</text>
+  </svg>
+  <p class="small">Plot the "Average score" row from the data sheet, then join the dots. <strong>Where does the line cross the dashed "smooth" line?</strong> That's the group's movie threshold.</p>
+
+  <h3>Graph 2: How many people had each movie threshold (bar graph)</h3>
+  <p class="small">Along the bottom, list each FPS. Draw a bar showing how many volunteers had that FPS as their threshold. Is there one tall bar (people agree), or are the bars spread out (people's eyes and brains differ)?</p>
+
+  <h3>Do the math</h3>
+  <div class="cols">
+    <div class="box">
+      <p class="small" style="margin-bottom:0.04in"><strong>Average (mean) threshold</strong> = add up all the thresholds ÷ the number of volunteers</p>
+      <p style="margin:0.1in 0 0">= <span class="fill"></span> ÷ <span class="fill" style="min-width:0.5in"></span> = <span class="fill" style="min-width:0.7in"></span> FPS</p>
+    </div>
+    <div class="box">
+      <p class="small" style="margin-bottom:0.04in"><strong>Range</strong> = highest threshold − lowest threshold</p>
+      <p style="margin:0.1in 0 0">= <span class="fill" style="min-width:0.7in"></span> − <span class="fill" style="min-width:0.7in"></span> = <span class="fill" style="min-width:0.7in"></span> FPS</p>
+    </div>
+  </div>
+
+  <h3>Questions to think about</h3>
+  <ul>
+    <li>Was there a speed where almost <em>everyone</em> switched from "pictures" to "movie"?</li>
+    <li>Did scores keep going up after 24 FPS, or did they level off? (A curve that flattens out is called a <strong>plateau</strong>.)</li>
+    <li>Did kids and adults differ? People with and without glasses? Gamers and non-gamers?</li>
+    <li>Did the zoetrope look smoother or choppier than the screen at about the same FPS? Why might that be?</li>
+  </ul>
+
+  <div class="page-footer"><span>Frame Rate &amp; Persistence of Vision</span><span>10</span></div>
+</section>
+
+<!-- =============================== PAGE 11: CONCLUSION & EXTENSIONS =============================== -->
+<section class="page">
+  <h2><span class="step">Wrap it up</span><br>Conclusion and extensions</h2>
+
+  <h3>Conclusion (fill in the blanks)</h3>
+  <div class="box">
+    <p class="hand" style="line-height:2.1; margin:0">
+      I wanted to find out the lowest frame rate where drawings look like a movie. I tested
+      <span class="fill" style="min-width:0.5in"></span> volunteers at
+      <span class="fill" style="min-width:0.5in"></span> different speeds. The average movie threshold was
+      <span class="fill" style="min-width:0.6in"></span> FPS, and the range was
+      <span class="fill" style="min-width:0.5in"></span> to
+      <span class="fill" style="min-width:0.5in"></span> FPS. My hypothesis was
+      <span class="fill" style="min-width:1.4in"></span> (supported / not supported) because
+      <span class="fill" style="min-width:3.5in"></span>.
+      This happens because the brain's motion detectors fill in the movement between frames (the phi phenomenon), and persistence of vision hides the gaps between them. One thing that surprised me was
+      <span class="fill" style="min-width:3in"></span>.
+      If I did this again, I would
+      <span class="fill" style="min-width:3.2in"></span>.
+    </p>
+  </div>
+
+  <h3>Sources of error to mention</h3>
+  <ul class="small">
+    <li>Volunteers might guess what you want to hear, which is why you shuffle the speeds and use a script.</li>
+    <li>The zoetrope's speed changes slightly as it spins.</li>
+    <li>Screens can't show some frame rates perfectly evenly (judder at 8 and 24 FPS).</li>
+    <li>A small number of volunteers: more people give more trustworthy averages.</li>
+  </ul>
+
+  <h3>Extension experiments (pick one if there's time)</h3>
+  <div class="cols">
+    <div class="box">
+      <h3>Big steps vs. small steps</h3>
+      <p class="small">Make a second animation where the car moves <strong>twice as far</strong> each frame. Does it need a <em>higher</em> FPS to look smooth? (Prediction: yes. Smoothness depends on both FPS <em>and</em> how far things jump.)</p>
+    </div>
+    <div class="box">
+      <h3>Center vs. side vision</h3>
+      <p class="small">Have volunteers look at a dot to the <em>side</em> of the screen. The edges of the retina have more rods, which are very sensitive to flicker and motion. Does the animation look choppier out of the corner of the eye?</p>
+    </div>
+    <div class="box">
+      <h3>Bright vs. dim</h3>
+      <p class="small">Repeat the test with the screen brightness turned way down. Eyes respond more slowly in dim light. Does the threshold change?</p>
+    </div>
+    <div class="box">
+      <h3>Flicker fusion (micro:bit or Arduino)</h3>
+      <p class="small">Blink an LED faster and faster. At what speed does it stop flickering and look steady? For most people it's around 50–60 flashes per second, which is much faster than the movie threshold. Why are they different?</p>
+    </div>
+  </div>
+
+  <div class="callout" style="margin-top:0.16in">
+    <div class="label">Eye-doctor connection</div>
+    <p class="small">Eye doctors and vision scientists use flicker and motion tests to check how well the retina, optic nerve and brain are working together. Some eye conditions make it harder to see flicker or motion. That makes this project a real (simple) version of a vision test.</p>
+  </div>
+
+  <div class="page-footer"><span>Frame Rate &amp; Persistence of Vision</span><span>11</span></div>
+</section>
+
+<!-- =============================== PAGE 12: DISPLAY BOARD + VOCAB =============================== -->
+<section class="page">
+  <h2><span class="step">Show it off</span><br>Display board plan</h2>
+
+  <svg viewBox="0 0 680 300" width="100%" role="img" aria-label="Tri-fold display board layout">
+    <g stroke="#1d2433" stroke-width="1.6" fill="#fff">
+      <rect x="10" y="40" width="190" height="240"/>
+      <rect x="200" y="20" width="280" height="260"/>
+      <rect x="480" y="40" width="190" height="240"/>
+    </g>
+    <g fill="#e8f0fe" stroke="#1f6feb" stroke-width="1.2">
+      <rect x="210" y="30" width="260" height="36" rx="4"/>
+    </g>
+    <text x="340" y="53" font-size="11" font-weight="700" text-anchor="middle" fill="#1d2433">How Fast Do Drawings Become a Movie?</text>
+    <g font-size="10.5" fill="#1d2433">
+      <rect x="22" y="54" width="166" height="50" fill="#f4f6fa" stroke="#d5dbe5"/><text x="30" y="72" font-weight="700">Question + Hypothesis</text><text x="30" y="88" fill="#5b6577">"If… then… because…"</text>
+      <rect x="22" y="112" width="166" height="80" fill="#f4f6fa" stroke="#d5dbe5"/><text x="30" y="130" font-weight="700">The Science</text><text x="30" y="146" fill="#5b6577">Eye → brain diagram</text><text x="30" y="160" fill="#5b6577">Persistence of vision</text><text x="30" y="174" fill="#5b6577">Phi phenomenon</text>
+      <rect x="22" y="200" width="166" height="68" fill="#f4f6fa" stroke="#d5dbe5"/><text x="30" y="218" font-weight="700">Materials + Procedure</text><text x="30" y="234" fill="#5b6577">Numbered steps,</text><text x="30" y="248" fill="#5b6577">photos of the build</text>
+
+      <rect x="214" y="76" width="252" height="92" fill="#fff4e5" stroke="#b35c00"/><text x="222" y="94" font-weight="700">Graph 1: Smoothness vs FPS</text><text x="222" y="110" fill="#5b6577">(biggest thing on the board)</text>
+      <rect x="214" y="176" width="122" height="92" fill="#f4f6fa" stroke="#d5dbe5"/><text x="222" y="194" font-weight="700">The 12 drawings</text><text x="222" y="210" fill="#5b6577">in a row</text>
+      <rect x="344" y="176" width="122" height="92" fill="#f4f6fa" stroke="#d5dbe5"/><text x="352" y="194" font-weight="700">Graph 2</text><text x="352" y="210" fill="#5b6577">Threshold bars</text>
+
+      <rect x="492" y="54" width="166" height="70" fill="#f4f6fa" stroke="#d5dbe5"/><text x="500" y="72" font-weight="700">Results</text><text x="500" y="88" fill="#5b6577">Average threshold</text><text x="500" y="102" fill="#5b6577">in BIG numbers</text>
+      <rect x="492" y="132" width="166" height="70" fill="#f4f6fa" stroke="#d5dbe5"/><text x="500" y="150" font-weight="700">Conclusion</text><text x="500" y="166" fill="#5b6577">Supported or not?</text>
+      <rect x="492" y="210" width="166" height="58" fill="#f4f6fa" stroke="#d5dbe5"/><text x="500" y="228" font-weight="700">Fun facts</text><text x="500" y="244" fill="#5b6577">24 FPS movies, 3:2 pulldown</text>
+    </g>
+    <text x="340" y="296" font-size="10.5" fill="#5b6577" text-anchor="middle">On the table in front: the spinning zoetrope + a tablet playing the flipbook (visitors can try it!)</text>
+  </svg>
+
+  <div class="cols" style="margin-top:0.1in">
+    <div>
+      <h3 style="margin-top:0">Be ready to answer judges</h3>
+      <ul class="small">
+        <li>Why did you shuffle the order of speeds?</li>
+        <li>What's the difference between persistence of vision and the phi phenomenon?</li>
+        <li>Why do zoetropes need slits?</li>
+        <li>Why are movies 24 FPS if your threshold was lower (or higher)?</li>
+        <li>What would you test next?</li>
+      </ul>
+    </div>
+    <div>
+      <h3 style="margin-top:0">Vocabulary</h3>
+      <dl class="vocab small" style="margin:0">
+        <dt>Frame</dt><dd>One still picture in an animation.</dd>
+        <dt>Frame rate (FPS)</dt><dd>How many frames are shown each second.</dd>
+        <dt>Persistence of vision</dt><dd>A fading trace of an image that lasts a split second after it's gone.</dd>
+        <dt>Phi phenomenon</dt><dd>The brain seeing motion between quickly flashed still pictures.</dd>
+        <dt>Threshold</dt><dd>The point where something changes, here from "pictures" to "movie."</dd>
+        <dt>Zoetrope</dt><dd>A spinning drum with slits that shows a looping animation.</dd>
+        <dt>Retina</dt><dd>The light-sensing layer at the back of the eye.</dd>
+      </dl>
+    </div>
+  </div>
+
+  <div class="page-footer"><span>Frame Rate &amp; Persistence of Vision</span><span>12</span></div>
+</section>
+
+<!-- =============================== PAGE 13: PARENT NOTES =============================== -->
+<section class="page">
+  <h2><span class="step">For grown-ups</span><br>Notes for parents and helpers</h2>
+
+  <h3>Suggested schedule</h3>
+  <table>
+    <tr><th style="width:18%">When</th><th>Tasks</th></tr>
+    <tr><td><strong>Week 1</strong></td><td>Read the background page together and try the afterimage trick. Write the hypothesis. Plan the 12-frame story and sketch rough drawings.</td></tr>
+    <tr><td><strong>Week 2</strong></td><td>Finish the 12 final drawings. Photograph them and set up the digital flipbook. Build the zoetrope and measure its spin speeds.</td></tr>
+    <tr><td><strong>Week 3</strong></td><td>Test 10–20 volunteers (about 5 minutes each). Fill in the data sheet.</td></tr>
+    <tr><td><strong>Week 4</strong></td><td>Work out averages, draw graphs, write the conclusion and build the display board. Practice explaining the project out loud.</td></tr>
+  </table>
+
+  <h3>What results to expect <span class="muted small">(keep this to yourself until after testing, so it doesn't bias the hypothesis)</span></h3>
+  <ul>
+    <li>Most people start to see <em>some</em> motion around <strong>6–10 FPS</strong>, and rate hand-drawn animation as smooth somewhere around <strong>12–20 FPS</strong>.</li>
+    <li>Scores usually <strong>plateau</strong> above about 20–24 FPS. Hand-drawn animation already looks "finished" there, which is part of why 24 FPS became the movie standard.</li>
+    <li>The threshold shifts a lot with <strong>how far objects move per frame</strong>. Small steps look smooth at lower FPS. If results are surprisingly high, the drawings may have big jumps, and that is itself a great finding to discuss.</li>
+    <li>Differences between kids and adults, or gamers and non-gamers, are usually small with only 10–20 people. "No clear difference" is a perfectly valid result.</li>
+  </ul>
+
+  <h3>Where you can help</h3>
+  <ul>
+    <li>All craft-knife cutting and any work near a spinning wheel or motor.</li>
+    <li>Setting up the app or Scratch project the first time, then let him run it.</li>
+    <li>Recruiting volunteers (neighbors, family, classmates at pickup).</li>
+    <li>Checking the math on averages, but let him do it first.</li>
+  </ul>
+
+  <div class="callout warm">
+    <div class="label">Check the fair's rules</div>
+    <p class="small">Many school and regional science fairs treat any project with <strong>human volunteers</strong> as a "human subjects" project. That can require a simple consent form or teacher approval <em>before</em> testing starts. Ask the teacher early. Use codes (V1, V2…) instead of names on the board, and skip anyone who is sensitive to flashing images.</p>
+  </div>
+
+  <h3>Helpful search terms</h3>
+  <p class="small">"how to make a zoetrope" · "phi phenomenon demonstration" · "beta movement animation" · "critical flicker fusion" · "Eadweard Muybridge horse in motion" (the famous 1878 photos that helped invent movies; a great addition to the board) · "Scratch animation costumes tutorial"</p>
+
+  <div class="page-footer"><span>Frame Rate &amp; Persistence of Vision</span><span>13</span></div>
+</section>
+
+<!-- =============================== SCREEN-ONLY: FPS TESTER =============================== -->
+<section class="page screen-only tester" style="height:auto; min-height:11in">
+  <h2><span class="step">Online tool</span><br>FPS tester (digital flipbook)</h2>
+  <p>Use this to run the experiment on a laptop or tablet. It starts with a sample car animation. Click <strong>Load my drawings</strong> to use the photos of his own 12 frames instead (they play in file-name order, so name them frame01, frame02, and so on).</p>
+
+  <canvas id="stage" width="960" height="600"></canvas>
+
+  <div class="controls" id="fpsButtons"></div>
+  <div class="controls">
+    <button class="primary" id="mystery">Mystery speed (hidden)</button>
+    <button id="reveal">Reveal speed</button>
+    <button id="play5">Play 5 seconds</button>
+    <button id="toggle">Pause</button>
+    <label class="file">Load my drawings<input type="file" id="files" accept="image/*" multiple></label>
+    <button id="sample">Use sample animation</button>
+    <span class="status" id="status"></span>
+  </div>
+  <div class="readout" id="readout"></div>
+
+  <div class="callout small">
+    <p><strong>How to run a volunteer:</strong> click <em>Mystery speed</em>. A random speed they haven't seen yet starts playing, and the label is hidden. Click <em>Play 5 seconds</em> to time each viewing, write down their P/M and score, then click <em>Reveal speed</em> to record which FPS it was. After all 10 speeds have been used, the mystery list reshuffles for the next volunteer.</p>
+    <p style="margin:0">Speeds that don't divide evenly into your screen's refresh rate (usually 60 Hz), like 8 and 24 FPS, may show a slight stutter. See page 6.</p>
+  </div>
+</section>
+
+<script>
+(() => {
+  const SPEEDS = [2, 4, 6, 8, 10, 12, 15, 20, 24, 30];
+  const canvas = document.getElementById('stage');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const $ = id => document.getElementById(id);
+
+  let frames = [];
+  let fps = 12, hidden = false, playing = true, stopAt = null;
+  let mysteryQueue = [], volunteerRound = 1;
+  let start = performance.now(), pausedIdx = 0;
+
+  function drawSampleFrame(i, n) {
+    const c = document.createElement('canvas');
+    c.width = W; c.height = H;
+    const g = c.getContext('2d');
+    const t = i / n;
+    g.fillStyle = '#ffffff'; g.fillRect(0, 0, W, H);
+    g.strokeStyle = '#1d2433'; g.lineWidth = 5; g.lineCap = 'round'; g.lineJoin = 'round';
+
+    g.beginPath(); g.moveTo(0, 470); g.lineTo(W, 470); g.stroke();
+    g.lineWidth = 6;
+    for (let k = -1; k < 6; k++) {
+      const x = ((k * 200) - t * 200 + W) % (W + 200) - 100;
+      g.beginPath(); g.moveTo(x, 530); g.lineTo(x + 90, 530); g.stroke();
+    }
+    const tx = W + 80 - ((t * (W + 240)) % (W + 240));
+    g.lineWidth = 5;
+    g.beginPath(); g.moveTo(tx, 470); g.lineTo(tx, 360); g.stroke();
+    g.beginPath(); g.arc(tx, 320, 55, 0, Math.PI * 2); g.stroke();
+
+    const bump = Math.max(0, Math.sin(t * Math.PI * 2)) * 22;
+    car(g, 520 + Math.sin(t * Math.PI * 2) * 30, 470 - bump, t, '#d13b3b', null);
+    car(g, 140 - Math.sin(t * Math.PI * 2) * 25, 470, t, '#1f6feb', i % 2 === 0);
+
+    g.fillStyle = '#5b6577'; g.font = '28px sans-serif';
+    g.fillText(String(i + 1), W - 50, 50);
+    return c;
+  }
+
+  function car(g, x, ground, t, color, lightsOn) {
+    const y = ground - 40;
+    g.lineWidth = 5; g.strokeStyle = '#1d2433';
+    g.fillStyle = color;
+    g.beginPath();
+    g.moveTo(x, y); g.lineTo(x + 230, y); g.lineTo(x + 230, y - 45);
+    g.lineTo(x + 170, y - 50); g.lineTo(x + 135, y - 95); g.lineTo(x + 60, y - 95);
+    g.lineTo(x + 30, y - 50); g.lineTo(x, y - 45); g.closePath();
+    g.fill(); g.stroke();
+    g.fillStyle = '#ffffff';
+    g.beginPath(); g.moveTo(x + 70, y - 82); g.lineTo(x + 125, y - 82); g.lineTo(x + 150, y - 52); g.lineTo(x + 50, y - 52); g.closePath(); g.fill(); g.stroke();
+    if (lightsOn !== null) {
+      g.fillStyle = lightsOn ? '#f0b429' : '#ffffff';
+      g.fillRect(x + 85, y - 115, 30, 18); g.strokeRect(x + 85, y - 115, 30, 18);
+    }
+    [x + 50, x + 185].forEach(cx => {
+      g.fillStyle = '#ffffff';
+      g.beginPath(); g.arc(cx, y + 5, 30, 0, Math.PI * 2); g.fill(); g.stroke();
+      const a = t * Math.PI * 2 * 2;
+      g.beginPath(); g.moveTo(cx, y + 5); g.lineTo(cx + Math.cos(a) * 26, y + 5 + Math.sin(a) * 26); g.stroke();
+      g.beginPath(); g.moveTo(cx, y + 5); g.lineTo(cx - Math.cos(a) * 26, y + 5 - Math.sin(a) * 26); g.stroke();
+    });
+  }
+
+  function useSample() {
+    frames = Array.from({ length: 12 }, (_, i) => drawSampleFrame(i, 12));
+    setStatus('Sample animation: 12 frames');
+    restart();
+  }
+
+  function setStatus(s) { $('status').textContent = s; }
+
+  function restart() { start = performance.now(); }
+
+  function setFps(v, isHidden) {
+    fps = v; hidden = !!isHidden; playing = true; stopAt = null;
+    $('toggle').textContent = 'Pause';
+    renderButtons(); updateReadout(); restart();
+  }
+
+  function updateReadout() {
+    $('readout').textContent = hidden ? 'Speed: ???  (mystery)' : `Speed: ${fps} FPS  (each drawing shown for ${(1 / fps).toFixed(3)} s)`;
+  }
+
+  function renderButtons() {
+    const box = $('fpsButtons');
+    box.innerHTML = '';
+    SPEEDS.forEach(s => {
+      const b = document.createElement('button');
+      b.textContent = `${s} FPS`;
+      if (!hidden && s === fps) b.className = 'on';
+      b.onclick = () => setFps(s, false);
+      box.appendChild(b);
+    });
+  }
+
+  function nextMystery() {
+    if (!mysteryQueue.length) {
+      mysteryQueue = SPEEDS.slice();
+      for (let i = mysteryQueue.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [mysteryQueue[i], mysteryQueue[j]] = [mysteryQueue[j], mysteryQueue[i]];
+      }
+      volunteerRound++;
+    }
+    setFps(mysteryQueue.shift(), true);
+    setStatus(`Volunteer #${volunteerRound - 1}: mystery clip ${SPEEDS.length - mysteryQueue.length} of ${SPEEDS.length}`);
+  }
+
+  function loop(now) {
+    paint(now);
+    requestAnimationFrame(loop);
+  }
+
+  function paint(now) {
+    if (frames.length) {
+      let idx;
+      if (playing) {
+        idx = Math.floor(((now - start) / 1000) * fps) % frames.length;
+        pausedIdx = idx;
+        if (stopAt && now >= stopAt) { playing = false; stopAt = null; $('toggle').textContent = 'Play'; }
+      } else {
+        idx = pausedIdx;
+      }
+      const f = frames[idx];
+      ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, W, H);
+      const s = Math.min(W / f.width, H / f.height);
+      const w = f.width * s, h = f.height * s;
+      ctx.drawImage(f, (W - w) / 2, (H - h) / 2, w, h);
+    }
+  }
+
+  $('mystery').onclick = nextMystery;
+  $('reveal').onclick = () => { hidden = false; renderButtons(); updateReadout(); };
+  $('play5').onclick = () => { playing = true; restart(); stopAt = performance.now() + 5000; $('toggle').textContent = 'Pause'; };
+  $('toggle').onclick = () => {
+    playing = !playing; stopAt = null;
+    if (playing) restart();
+    $('toggle').textContent = playing ? 'Pause' : 'Play';
+  };
+  $('sample').onclick = useSample;
+  $('files').onchange = async e => {
+    const list = Array.from(e.target.files).sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
+    if (!list.length) return;
+    const imgs = await Promise.all(list.map(file => new Promise((res, rej) => {
+      const img = new Image();
+      img.onload = () => res(img);
+      img.onerror = rej;
+      img.src = URL.createObjectURL(file);
+    })));
+    frames = imgs;
+    setStatus(`Loaded ${imgs.length} drawings`);
+    restart();
+  };
+
+  renderButtons(); updateReadout(); useSample();
+  paint(performance.now());
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
